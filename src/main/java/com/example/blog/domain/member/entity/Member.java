@@ -34,4 +34,8 @@ public class Member extends BaseEntity {
   private String profileUrl;
   @Column(nullable = false)
   private String name;
+
+  public void updateStatus(MemberStatus status){
+    this.status = status;
+  }
 }

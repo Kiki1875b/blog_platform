@@ -1,21 +1,21 @@
 package com.example.blog.auth.handler;
 
 import com.example.blog.auth.jwt.JwtUtil;
-import com.example.blog.common.enumerated.MemberStatus;
-import com.example.blog.common.enumerated.Provider;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
 import com.example.blog.domain.refresh_token.RefreshToken;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
 
 @RequiredArgsConstructor
 public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -37,7 +37,18 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
 
     refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken));
 
-    response.setHeader("Authorization", "Bearer " + accessToken);
-    response.setHeader("Refresh-Token", refreshToken);
+    String encodedName = URLEncoder.encode(member.getName(), StandardCharsets.UTF_8);
+    String encodedEmail = URLEncoder.encode(member.getEmail(), StandardCharsets.UTF_8);
+    String encodedRole = URLEncoder.encode("USER", StandardCharsets.UTF_8);
+
+    String redirectUri = "http://localhost:3000/oauth2/redirect"
+        + "?token=" + accessToken
+        + "&refreshToken=" + refreshToken
+        + "&id=" + member.getId()
+        + "&name=" + encodedName
+        + "&email=" + encodedEmail
+        + "&role=" + encodedRole;
+
+    response.sendRedirect(redirectUri);
   }
 }
