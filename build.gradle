@@ -33,6 +33,27 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0' // P6Spy 사용
+	// mapstruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// mapstruct + lombok
+	implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+	//oauth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	implementation 'com.querydsl:querydsl-jpa:5.0.0' // querydsl
+
+	implementation 'org.postgresql:postgresql:42.7.4' // postgresql
 }
 
 tasks.named('test') {
