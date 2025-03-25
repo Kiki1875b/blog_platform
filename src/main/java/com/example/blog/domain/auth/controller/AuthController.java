@@ -2,6 +2,7 @@ package com.example.blog.domain.auth.controller;
 
 
 import com.example.blog.auth.jwt.JwtUtil;
+import com.example.blog.domain.auth.dto.LoginDto;
 import com.example.blog.domain.auth.dto.RegisterRequestDTO;
 import com.example.blog.domain.auth.service.AuthService;
 import com.example.blog.domain.member.MemberResponseDto;
@@ -25,8 +26,21 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<MemberResponseDto> register(HttpServletResponse response, @RequestBody RegisterRequestDTO register){
-
     MemberResponseDto memberDto = authService.register(response, register);
+    return generateTokens(response, memberDto);
+  }
+
+
+  @PostMapping("/login")
+  public ResponseEntity<MemberResponseDto> login(HttpServletResponse response, @RequestBody
+      LoginDto loginDto){
+    MemberResponseDto memberDto = authService.login(loginDto);
+    return generateTokens(response, memberDto);
+  }
+
+
+  private ResponseEntity<MemberResponseDto> generateTokens(HttpServletResponse response,
+      MemberResponseDto memberDto) {
     String accessToken = JwtUtil.generateAccessToken(memberDto.id(), "USER"); //TODO : role 고민
     String refreshToken = JwtUtil.generateRefreshToken(memberDto.id());
     RefreshToken token = new RefreshToken(memberDto.id(), refreshToken);
@@ -37,5 +51,4 @@ public class AuthController {
 
     return ResponseEntity.ok(memberDto);
   }
-
 }
