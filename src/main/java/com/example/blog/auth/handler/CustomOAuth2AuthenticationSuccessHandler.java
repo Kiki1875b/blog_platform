@@ -12,16 +12,21 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
-
+@Component
 @RequiredArgsConstructor
 public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
   private final MemberRepository memberRepository;
   private final RefreshTokenRepository refreshTokenRepository;
+
+  @Value("${client-url}")
+  private String CLIENT_URL;
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
@@ -41,7 +46,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
     String encodedEmail = URLEncoder.encode(member.getEmail(), StandardCharsets.UTF_8);
     String encodedRole = URLEncoder.encode("USER", StandardCharsets.UTF_8);
 
-    String redirectUri = "http://localhost:3000/oauth2/redirect"
+    String redirectUri = CLIENT_URL + "/oauth2/redirect"
         + "?token=" + accessToken
         + "&refreshToken=" + refreshToken
         + "&id=" + member.getId()

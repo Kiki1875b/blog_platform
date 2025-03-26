@@ -31,12 +31,12 @@ public class AuthController {
   }
 
 
-  @PostMapping("/login")
-  public ResponseEntity<MemberResponseDto> login(HttpServletResponse response, @RequestBody
-      LoginDto loginDto){
-    MemberResponseDto memberDto = authService.login(loginDto);
-    return generateTokens(response, memberDto);
-  }
+//  @PostMapping("/login")
+//  public ResponseEntity<MemberResponseDto> login(HttpServletResponse response, @RequestBody
+//      LoginDto loginDto){
+//    MemberResponseDto memberDto = authService.login(loginDto);
+//    return generateTokens(response, memberDto);
+//  }
 
 
   private ResponseEntity<MemberResponseDto> generateTokens(HttpServletResponse response,
