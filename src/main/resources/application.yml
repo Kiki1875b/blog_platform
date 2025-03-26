@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: application-env.properties
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -28,4 +30,4 @@ custom:
   oauth2:
     base-url: "http://localhost:8080"
 
-client-url: "http://localhost:3000"
+clientUrl: "http://localhost:3000"

@@ -1,6 +1,7 @@
 package com.example.blog.auth.handler;
 
 import com.example.blog.auth.jwt.JwtUtil;
+import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.domain.member.entity.Member;
@@ -23,17 +24,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-  private final MemberRepository memberRepository;
-  private final MemberMapper memberMapper;
+
   private final RefreshTokenRepository refreshTokenRepository;
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
 
-    Member member = memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new AuthException(
-        ErrorCode.USER_NOT_FOUND_BY_EMAIL));
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    Member member = userDetails.getMember();
 
-    String accessToken = JwtUtil.generateAccessToken(member.getId(), "ROLE_USER");
+    String accessToken = JwtUtil.generateAccessToken(member.getId(), member.getRole().name());
     String refreshToken = JwtUtil.generateRefreshToken(member.getId());
 
     refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken));
@@ -41,9 +41,9 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
     response.setHeader("Authorization", "Bearer " + accessToken);
     response.setHeader("Refresh-Token", refreshToken);
 
-    response.setContentType("application/json");
+    response.setContentType("application/json; charset=UTF-8");
     response.getWriter().write(new ObjectMapper().writeValueAsString(
-        Map.of("id", member.getId(), "email", member.getEmail(), "name", member.getName(), "role", "ROLE_USER")
+        Map.of("id", member.getId(), "email", member.getEmail(), "name", member.getName(), "role", member.getRole())
     ));
   }
 }

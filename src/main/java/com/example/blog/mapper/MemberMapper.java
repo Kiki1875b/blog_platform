@@ -1,6 +1,6 @@
 package com.example.blog.mapper;
 
-import com.example.blog.domain.auth.dto.RegisterRequestDTO;
+import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.domain.member.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import org.mapstruct.Mapper;

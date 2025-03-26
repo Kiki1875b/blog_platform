@@ -35,11 +35,18 @@ public class Member extends BaseEntity {
   @Column(nullable = false)
   private String name;
 
+  @Enumerated(EnumType.STRING)
+  private MemberRole role = MemberRole.USER;
+
   public void updateStatus(MemberStatus status){
     this.status = status;
   }
 
   public void updatePassword(String password){
     this.password = password;
+  }
+
+  public void updateRole(MemberRole role){
+    this.role = role;
   }
 }

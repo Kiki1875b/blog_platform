@@ -25,7 +25,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
   private final MemberRepository memberRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  @Value("${client-url}")
+  @Value("${clientUrl}")
   private String CLIENT_URL;
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,7 +37,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalStateException("등록되지 않은 사용자입니다."));
 
-    String accessToken = JwtUtil.generateAccessToken(member.getId(), "ROLE_USER");
+    String accessToken = JwtUtil.generateAccessToken(member.getId(), member.getRole().name());
     String refreshToken = JwtUtil.generateRefreshToken(member.getId());
 
     refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken));
@@ -46,7 +46,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
     String encodedEmail = URLEncoder.encode(member.getEmail(), StandardCharsets.UTF_8);
     String encodedRole = URLEncoder.encode("USER", StandardCharsets.UTF_8);
 
-    String redirectUri = CLIENT_URL + "/oauth2/redirect"
+    String redirectUri = "http://localhost:3000" + "/oauth2/redirect" //TODO : 왜 Client_URL null 인지 파악
         + "?token=" + accessToken
         + "&refreshToken=" + refreshToken
         + "&id=" + member.getId()

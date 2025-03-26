@@ -36,7 +36,6 @@ public class JwtUtil {
 
   public static String generateRefreshToken(Long userId){
 
-
     return Jwts.builder()
         .setSubject(String.valueOf(userId))
         .setIssuedAt(new Date())

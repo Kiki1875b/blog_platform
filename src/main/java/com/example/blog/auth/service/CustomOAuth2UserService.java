@@ -3,6 +3,7 @@ package com.example.blog.auth.service;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.enumerated.Provider;
 import com.example.blog.domain.member.entity.Member;
+import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.member.repository.MemberRepository;
 import java.util.Collections;
 import java.util.Map;
@@ -36,7 +37,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     String pictureUrl = oAuth2User.getAttribute("picture");
     String name = oAuth2User.getAttribute("given_name").toString() + " " + oAuth2User.getAttribute("family_name").toString();
 
-
     memberRepository.findByEmail(email).orElseGet(() -> {
       return memberRepository.save(new Member(
           email,
@@ -46,7 +46,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
           providerId,
           MemberStatus.ACTIVE,
           pictureUrl,
-          name
+          name,
+          MemberRole.USER
       ));
     });
 

@@ -1,5 +1,6 @@
 package com.example.blog.auth.jwt;
 
+import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
@@ -13,6 +14,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,9 +36,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Long userId = Long.parseLong(claims.getSubject());
 
         Optional<Member> optionalMember = memberRepository.findById(userId);
+
         if(optionalMember.isPresent()){
           Member member = optionalMember.get();
-          UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, null,
+          CustomUserDetails userDetails = new CustomUserDetails(member);
+
+          UsernamePasswordAuthenticationToken authentication =
+              new UsernamePasswordAuthenticationToken(userDetails, null,
               Collections.emptyList());
 
           SecurityContextHolder.getContext().setAuthentication(authentication);

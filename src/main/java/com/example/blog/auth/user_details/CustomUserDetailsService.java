@@ -1,4 +1,4 @@
-package com.example.blog.domain.auth.user_details;
+package com.example.blog.auth.user_details;
 
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
@@ -23,10 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthException(
         ErrorCode.USER_NOT_FOUND_BY_EMAIL));
 
-    return User.builder()
-        .username(member.getEmail())
-        .password(member.getPassword())
-        .authorities("ROLE_USER")
-        .build();
+    return new CustomUserDetails(member);
   }
 }

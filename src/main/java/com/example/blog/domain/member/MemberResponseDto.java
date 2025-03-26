@@ -1,6 +1,7 @@
 package com.example.blog.domain.member;
 
 import com.example.blog.common.enumerated.MemberStatus;
+import com.example.blog.domain.member.entity.MemberRole;
 import java.time.Instant;
 import lombok.Setter;
 
@@ -14,7 +15,8 @@ public record MemberResponseDto(
     String provider,
     MemberStatus status,
     String profileUrl,
-    String name
+    String name,
+    MemberRole role
 ) {
 
 }

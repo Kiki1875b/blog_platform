@@ -1,4 +1,4 @@
-package com.example.blog.domain.auth.dto;
+package com.example.blog.auth.dto;
 
 public record RegisterRequestDTO(
     String email,
