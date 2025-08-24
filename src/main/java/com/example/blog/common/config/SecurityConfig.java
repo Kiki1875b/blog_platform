@@ -3,7 +3,8 @@ package com.example.blog.common.config;
 import com.example.blog.auth.handler.CustomOAuth2AuthenticationSuccessHandler;
 import com.example.blog.auth.handler.FormLoginSuccessHandler;
 import com.example.blog.auth.jwt.JwtAuthenticationFilter;
-import com.example.blog.auth.service.CustomOAuth2UserService;
+import com.example.blog.auth.jwt.JwtService;
+import com.example.blog.auth.oauth.CustomOAuth2UserService;
 import com.example.blog.auth.user_details.CustomUserDetailsService;
 import com.example.blog.domain.member.repository.MemberRepository;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +41,7 @@ public class SecurityConfig {
   private final CustomUserDetailsService customUserDetailsService;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwtService) throws Exception{
     http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
@@ -48,13 +50,17 @@ public class SecurityConfig {
         )
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
+                "/favicon.ico",
                 "/api/oauth2/**",
                 "/api/public/**",
                 "/api/token/refresh",
+                "/oauth2/**",
                 "/api/auth/**"
             )
             .permitAll()
+            .requestMatchers("/favicon.ico").permitAll()
             .requestMatchers("/api/private/**").authenticated()
+            .requestMatchers("/api/posts/**").hasRole("USER")
             .anyRequest().denyAll()
         )
         .formLogin(form -> form
@@ -65,7 +71,7 @@ public class SecurityConfig {
         )
         .oauth2Login(oauth2 -> oauth2
             .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-            .successHandler(new CustomOAuth2AuthenticationSuccessHandler(memberRepository, refreshTokenRepository))
+            .successHandler(new CustomOAuth2AuthenticationSuccessHandler(memberRepository,  jwtService, refreshTokenRepository ))
         )
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint(((request, response, authException) -> {
@@ -103,5 +109,15 @@ public class SecurityConfig {
     builder.userDetailsService(customUserDetailsService)
         .passwordEncoder(passwordEncoder());
     return builder.build();
+  }
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.ignoring().requestMatchers(
+        "/favicon.ico",
+        "/css/**",
+        "/js/**",
+        "/images/**"
+    );
   }
 }
