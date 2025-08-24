@@ -10,12 +10,12 @@ public class InMemoryBlacklist implements Blacklist{
 
   private final Map<String, Instant> blacklist = new ConcurrentHashMap<>();
   @Override
-  public void addToBlackList(String token) {
-
+  public void addToBlackList(String token, Instant expTime) {
+    blacklist.put(token, expTime);
   }
 
   @Override
   public boolean exists(String token) {
-    return false;
+    return blacklist.containsKey(token);
   }
 }

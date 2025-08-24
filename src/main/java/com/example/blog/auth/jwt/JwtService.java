@@ -5,9 +5,11 @@ import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.domain.member.entity.Member;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,9 +65,20 @@ public class JwtService {
   }
 
   public void invalidateToken(String token){
-    blacklist.addToBlackList(token);
+    blacklist.addToBlackList(token, extractExpirationInstant(token));
   }
 
+  public Date extractExpiration(String token) {
+    try {
+      return parseToken(token).getExpiration();
+    } catch (ExpiredJwtException e) {
+      return e.getClaims().getExpiration();
+    }
+  }
+
+  public Instant extractExpirationInstant(String token) {
+    return extractExpiration(token).toInstant();
+  }
   private Key getSigningKey(){
     return  Keys.hmacShaKeyFor(SECRET.getBytes());
   }

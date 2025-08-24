@@ -118,6 +118,7 @@ public class AuthServiceImpl implements AuthService{
     // 4. 새로운 AccessToken 발급
     Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
+
     String newAccessToken = jwtService.generateAccessToken(member, member.getRole().name());
 
     return Map.of(
