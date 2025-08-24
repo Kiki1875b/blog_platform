@@ -105,9 +105,15 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         .maxAge(Duration.ofDays(14))
         .build();
 
+    refreshTokenRepository.findById(member.getId()) // TODO : refresh token 은 id 를 member 와 공유해도 되는지?
+        .ifPresentOrElse(
+            token -> token.updateToken(refreshToken), // update 메서드 만들어두면 좋음
+            () -> refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken))
+        );
+
     response.addHeader("Set-Cookie", refresh.toString());
 
     // Access Token은 여기서 주지 않고, 프론트는 redirect 후 /api/auth/refresh 호출로 발급 받음
-    response.sendRedirect(CLIENT_URL + "/login/success");
+    response.sendRedirect("http://localhost:3000" + "/");
   }
 }

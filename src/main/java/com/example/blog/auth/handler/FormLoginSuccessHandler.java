@@ -22,6 +22,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 //
 //@Component
 //@RequiredArgsConstructor
@@ -70,6 +72,7 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
+  @Transactional
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException {
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -84,12 +87,13 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
             token -> token.updateToken(refreshToken), // update 메서드 만들어두면 좋음
             () -> refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken))
         );
+
     // Refresh Token 쿠키 저장
     ResponseCookie refresh = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
         .httpOnly(true)
         .secure(true)
         .sameSite("None") // FE/BE 분리 환경이면 None
-        .path("/api/auth/refresh")
+        .path("/")
         .maxAge(Duration.ofDays(14))
         .build();
 
@@ -97,12 +101,12 @@ public class FormLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     // 응답 Body에는 Access Token만 내려줌
     response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType("application/json");
-    response.getWriter().write(new ObjectMapper().writeValueAsString(
-        Map.of(
-            "accessToken", accessToken,
-            "expiresIn", 900
-        )
-    ));
+//    response.setContentType("application/json");
+//    response.getWriter().write(new ObjectMapper().writeValueAsString(
+//        Map.of(
+//            "accessToken", accessToken,
+//            "expiresIn", 900
+//        )
+//    ));
   }
 }
