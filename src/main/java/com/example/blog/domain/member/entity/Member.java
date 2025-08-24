@@ -22,16 +22,23 @@ public class Member extends BaseEntity {
 
   @Column(nullable = false, unique = true)
   private String email;
+
   private String password;
-  @Column(nullable = false, unique = true)
+
+  @Column(nullable = false)
   private String nickname;
+
   @Enumerated(EnumType.STRING)
   private Provider provider;
+
   private String providerId;
+
   @Enumerated(EnumType.STRING)
   private MemberStatus status;
+
   @Column(nullable = true)
   private String profileUrl;
+
   @Column(nullable = false)
   private String name;
 

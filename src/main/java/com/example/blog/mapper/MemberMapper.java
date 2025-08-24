@@ -1,6 +1,7 @@
 package com.example.blog.mapper;
 
 import com.example.blog.auth.dto.RegisterRequestDTO;
+import com.example.blog.common.enumerated.Provider;
 import com.example.blog.domain.member.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import org.mapstruct.Mapper;
@@ -16,6 +17,9 @@ public interface MemberMapper {
   @Mapping(target = "providerId", ignore = true)
   @Mapping(target = "status", ignore = true)
   Member toEntity(RegisterRequestDTO dto);
+
+  @Mapping(target = "role", constant = "USER")
+  Member fromOAuthToMember(String name, String email, String providerId, Provider provider, String nickname);
 
   MemberResponseDto toResponseDto(Member member);
 }

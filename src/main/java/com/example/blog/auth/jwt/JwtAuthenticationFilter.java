@@ -6,10 +6,13 @@ import com.example.blog.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,38 +22,70 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+//@Component
+//@RequiredArgsConstructor
+//public class JwtAuthenticationFilter extends OncePerRequestFilter {
+//
+//  private final MemberRepository memberRepository;
+//  private final JwtService jwtService;
+//  @Override
+//  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+//      FilterChain filterChain) throws ServletException, IOException {
+//    String token = extractTokenFromCookie(request, "ACCESS_TOKEN");
+//    if (token != null) {
+//      try {
+//        Claims claims = jwtService.parseToken(token);
+//        Long userId = Long.parseLong(claims.getSubject());
+//
+//        memberRepository.findById(userId).ifPresent(member -> {
+//          CustomUserDetails userDetails = new CustomUserDetails(member);
+//          UsernamePasswordAuthenticationToken auth =
+//              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//          SecurityContextHolder.getContext().setAuthentication(auth);
+//        });
+//      } catch (Exception e) {
+//        SecurityContextHolder.clearContext();
+//      }
+//    }
+//    filterChain.doFilter(request, response);
+//  }
+//
+//  private String extractTokenFromCookie(HttpServletRequest request, String name) {
+//    if (request.getCookies() == null) return null;
+//    return Arrays.stream(request.getCookies())
+//        .filter(c -> name.equals(c.getName()))
+//        .map(Cookie::getValue)
+//        .findFirst().orElse(null);
+//  }
+//
+//}
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final MemberRepository memberRepository;
+  private final JwtService jwtService;
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
+    String authHeader = request.getHeader("Authorization");
 
-    String token = request.getHeader("Authorization");
-    if(token != null && token.startsWith("Bearer")){
-      token = token.substring(7);
-      try{
-        Claims claims = JwtUtil.parseToken(token);
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String token = authHeader.substring(7);
+      try {
+        Claims claims = jwtService.parseToken(token);
         Long userId = Long.parseLong(claims.getSubject());
 
-        Optional<Member> optionalMember = memberRepository.findById(userId);
-
-        if(optionalMember.isPresent()){
-          Member member = optionalMember.get();
+        memberRepository.findById(userId).ifPresent(member -> {
           CustomUserDetails userDetails = new CustomUserDetails(member);
-
-          UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(userDetails, null,
-              Collections.emptyList());
-
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-      }catch (Exception e){
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return;
+          UsernamePasswordAuthenticationToken auth =
+              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+          SecurityContextHolder.getContext().setAuthentication(auth);
+        });
+      } catch (Exception e) {
+        SecurityContextHolder.clearContext();
       }
     }
 
