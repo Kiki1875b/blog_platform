@@ -2,7 +2,7 @@ package com.example.blog.mapper;
 
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.common.enumerated.Provider;
-import com.example.blog.domain.member.MemberResponseDto;
+import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

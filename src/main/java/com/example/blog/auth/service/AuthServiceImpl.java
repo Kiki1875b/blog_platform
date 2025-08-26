@@ -5,7 +5,7 @@ import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.auth.dto.RegisterRequestDTO;
-import com.example.blog.domain.member.MemberResponseDto;
+import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.member.repository.MemberRepository;

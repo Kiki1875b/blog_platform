@@ -1,4 +1,4 @@
-package com.example.blog.domain.member;
+package com.example.blog.domain.member.dto;
 
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.domain.member.entity.MemberRole;

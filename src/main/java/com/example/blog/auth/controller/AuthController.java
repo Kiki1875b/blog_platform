@@ -4,8 +4,7 @@ package com.example.blog.auth.controller;
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.auth.service.AuthService;
 import com.example.blog.auth.service.PrincipalMember;
-import com.example.blog.domain.member.MemberResponseDto;
-import com.example.blog.domain.refresh_token.RefreshToken;
+import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import com.example.blog.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,8 +47,8 @@ public class AuthController {
     if(authentication == null){
       return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
     }
-    MemberResponseDto dto = memberMapper.toResponseDto(((PrincipalMember) authentication).getMember());
 
+    MemberResponseDto dto = memberMapper.toResponseDto(((PrincipalMember) authentication).getMember());
     System.out.println(dto.id());
     return ResponseEntity.ok(dto);
   }
