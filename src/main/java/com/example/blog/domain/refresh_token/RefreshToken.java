@@ -2,7 +2,9 @@ package com.example.blog.domain.refresh_token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,12 +15,13 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
 
   @Id
-  private Long memberId;
+  @Column(updatable = false, nullable = false)
+  private UUID memberId;
 
   @Column(nullable = false)
   private String token;
 
-  public RefreshToken(Long memberId, String token){
+  public RefreshToken(UUID memberId, String token){
     this.memberId = memberId;
     this.token = token;
   }

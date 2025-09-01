@@ -1,13 +1,14 @@
-package com.example.blog.domain.member;
+package com.example.blog.domain.member.dto;
 
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.domain.member.entity.MemberRole;
 import java.time.Instant;
+import java.util.UUID;
 import lombok.Setter;
 
 
 public record MemberResponseDto(
-    Long id,
+    UUID id,
     Instant createdAt,
     Instant updatedAt,
     String email,

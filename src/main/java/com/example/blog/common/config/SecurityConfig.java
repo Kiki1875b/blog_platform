@@ -61,7 +61,8 @@ public class SecurityConfig {
             .requestMatchers("/favicon.ico").permitAll()
             .requestMatchers("/api/private/**").authenticated()
             .requestMatchers("/api/posts/**").hasRole("USER")
-            .anyRequest().denyAll()
+            .requestMatchers("/api/member/**").hasRole("USER")
+            .anyRequest().authenticated()
         )
         .formLogin(form -> form
             .loginProcessingUrl("/api/auth/login")

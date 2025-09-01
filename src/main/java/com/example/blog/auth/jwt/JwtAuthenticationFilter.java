@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String token = authHeader.substring(7);
       try {
         Claims claims = jwtService.parseToken(token);
-        Long userId = Long.parseLong(claims.getSubject());
+        UUID userId = UUID.fromString(claims.getSubject());
 
         memberRepository.findById(userId).ifPresent(member -> {
           CustomUserDetails userDetails = new CustomUserDetails(member);

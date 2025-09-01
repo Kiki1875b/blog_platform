@@ -1,11 +1,16 @@
 package com.example.blog.auth.service;
 
+import static com.example.blog.common.utils.CookieUtils.clearAllRefreshCookies;
+import static com.example.blog.common.utils.CookieUtils.setRefreshCookie;
+
 import com.example.blog.auth.jwt.JwtService;
+import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.auth.dto.RegisterRequestDTO;
-import com.example.blog.domain.member.MemberResponseDto;
+import com.example.blog.common.utils.CookieUtils;
+import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.member.repository.MemberRepository;
@@ -17,10 +22,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,9 +42,14 @@ public class AuthServiceImpl implements AuthService{
   private final MemberMapper memberMapper;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final S3Service s3Service;
   private final RefreshTokenRepository refreshTokenRepository;
   private static final String ACCESS_COOKIE = "ACCESS_TOKEN";
   private static final String REFRESH_COOKIE = "REFRESH_TOKEN";
+
+  @Value("${app.cookies.secure:true}")
+  private boolean cookieSecure;
+  private String sameSite() { return cookieSecure ? "None" : "Lax"; }
   @Override
   public MemberResponseDto register(HttpServletResponse response, RegisterRequestDTO registerDto) {
 
@@ -54,7 +67,7 @@ public class AuthServiceImpl implements AuthService{
   }
 
   @Override
-  public void signOut(HttpServletRequest req, HttpServletResponse res) {
+  public void signOut(HttpServletRequest req, HttpServletResponse res, PrincipalMember member) {
     // 1) 토큰 추출
     String accessToken = extractAccessTokenFromHeader(req).orElse(null);
     String refreshToken = extractCookie(req, REFRESH_COOKIE).orElse(null);
@@ -66,65 +79,42 @@ public class AuthServiceImpl implements AuthService{
     if (accessToken != null) {
       jwtService.invalidateToken(accessToken);
     }
-
-    // 3) 쿠키 만료(둘 다 제거)
-    ResponseCookie expiredAccess =
-        ResponseCookie.from(ACCESS_COOKIE, "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ZERO) // Max-Age=0
-            .build();
-
-    ResponseCookie expiredRefresh =
-        ResponseCookie.from(REFRESH_COOKIE, "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ZERO)
-            .build();
-
-    res.addHeader("Set-Cookie", expiredAccess.toString());
-    res.addHeader("Set-Cookie", expiredRefresh.toString());
+    refreshTokenRepository.deleteById(member.getMember().getId());
+    // 전량 삭제
+    CookieUtils.clearAllRefreshCookies(res, true, "None");
+    // ACCESS 쿠키도 쓰신다면 동일하게 삭제 처리
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
 
   @Override
   public Map<String, Object>  refresh(HttpServletRequest request, HttpServletResponse response) {
-    // 1. RefreshToken 추출 (쿠키 기반)
-    String refreshToken = Arrays.stream(request.getCookies())
-        .filter(c -> c.getName().equals("REFRESH_TOKEN"))
-        .findFirst()
-        .map(Cookie::getValue)
+// 1) 다중 RT 쿠키 중 "유효 + 저장소 매칭 + 최신(iat)" 선택
+
+    String refreshToken = resolveValidRefreshToken(request)
         .orElseThrow(() -> new AuthException(ErrorCode.INVALID_TOKEN_ERROR));
 
-    // 2. RefreshToken 유효성 검증
-    if (!jwtService.validateToken(refreshToken)) {
-      throw new AuthException(ErrorCode.INVALID_TOKEN_ERROR);
-    }
-
-    // 3. DB(혹은 Redis)에서 RefreshToken 확인
-    Long userId = Long.valueOf(jwtService.parseToken(refreshToken).getSubject());
+    UUID userId = UUID.fromString(jwtService.parseToken(refreshToken).getSubject());
     RefreshToken stored = refreshTokenRepository.findById(userId)
         .orElseThrow(() -> new AuthException(ErrorCode.INVALID_TOKEN_ERROR));
-
     if (!stored.getToken().equals(refreshToken)) {
       throw new AuthException(ErrorCode.INVALID_TOKEN_ERROR);
     }
 
-    // 4. 새로운 AccessToken 발급
+    // 2) 새 Access
     Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
-
     String newAccessToken = jwtService.generateAccessToken(member, member.getRole().name());
 
-    return Map.of(
-        "accessToken", newAccessToken,
-        "expiresIn", 900  // 초 단위 (15분)
-    );
+    // 3) ★ 회전(rotate) + 전량 삭제 후 단일 세팅
+    String newRefresh = jwtService.generateRefreshToken(userId);
+    stored.updateToken(newRefresh);
+    refreshTokenRepository.save(stored);
+
+    clearAllRefreshCookies(response, cookieSecure, sameSite());
+    setRefreshCookie(response, newRefresh, cookieSecure, sameSite());
+
+    return Map.of("accessToken", newAccessToken, "expiresIn", 900);
   }
 
 
@@ -148,5 +138,30 @@ public class AuthServiceImpl implements AuthService{
       return Optional.of(authHeader.substring(prefix.length()));
     }
     return Optional.empty();
+  }
+
+  private Optional<String> resolveValidRefreshToken(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies == null) return Optional.empty();
+
+    return Arrays.stream(cookies)
+        .filter(c -> REFRESH_COOKIE.equals(c.getName()))
+        .map(Cookie::getValue)
+        .filter(jwtService::validateToken)
+        .sorted((a, b) -> {
+          Date ia = jwtService.parseToken(a).getIssuedAt();
+          Date ib = jwtService.parseToken(b).getIssuedAt();
+          long la = ia != null ? ia.getTime() : 0L;
+          long lb = ib != null ? ib.getTime() : 0L;
+          return Long.compare(lb, la); // 최신 우선
+        })
+        .filter(t -> {
+          UUID uid = UUID.fromString(jwtService.parseToken(t).getSubject());
+          return refreshTokenRepository.findById(uid)
+              .map(RefreshToken::getToken)
+              .filter(stored -> stored.equals(t))
+              .isPresent();
+        })
+        .findFirst();
   }
 }
