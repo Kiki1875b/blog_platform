@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface AuthService {
   MemberResponseDto register(HttpServletResponse response, RegisterRequestDTO registerDto);
-  void signOut(HttpServletRequest req, HttpServletResponse res);
+  void signOut(HttpServletRequest req, HttpServletResponse res, PrincipalMember member);
 
   Map<String, Object> refresh(HttpServletRequest request, HttpServletResponse response);
 }

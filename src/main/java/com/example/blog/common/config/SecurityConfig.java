@@ -62,7 +62,7 @@ public class SecurityConfig {
             .requestMatchers("/api/private/**").authenticated()
             .requestMatchers("/api/posts/**").hasRole("USER")
             .requestMatchers("/api/member/**").hasRole("USER")
-            .anyRequest().denyAll()
+            .anyRequest().authenticated()
         )
         .formLogin(form -> form
             .loginProcessingUrl("/api/auth/login")

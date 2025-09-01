@@ -6,7 +6,7 @@ public record UpdateMemberRequestDto(
     String nickname,
     String password,
     String currentPassword,
-    MultipartFile profile
+    String s3Key
 ) {
 
 }

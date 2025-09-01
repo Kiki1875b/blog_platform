@@ -11,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class JwtService {
         .compact();
   }
 
-  public String generateRefreshToken(Long userId) {
+  public String generateRefreshToken(UUID userId) {
     return Jwts.builder()
         .setSubject(String.valueOf(userId))
         .setIssuedAt(new Date())

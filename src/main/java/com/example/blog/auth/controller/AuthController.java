@@ -4,6 +4,7 @@ package com.example.blog.auth.controller;
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.auth.service.AuthService;
 import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import com.example.blog.mapper.MemberMapper;
@@ -35,8 +36,8 @@ public class AuthController {
   }
 
   @PostMapping("/signout")
-  public ResponseEntity<Void> signOut(HttpServletRequest request, HttpServletResponse response){
-    authService.signOut(request, response);
+  public ResponseEntity<Void> signOut(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal PrincipalMember member){
+    authService.signOut(request, response, member);
     return ResponseEntity.ok().build();
   }
 
@@ -49,7 +50,6 @@ public class AuthController {
     }
 
     MemberResponseDto dto = memberMapper.toResponseDto(((PrincipalMember) authentication).getMember());
-    System.out.println(dto.id());
     return ResponseEntity.ok(dto);
   }
 
@@ -63,16 +63,4 @@ public class AuthController {
     }
   }
 
-//  private ResponseEntity<MemberResponseDto> generateTokens(HttpServletResponse response,
-//      MemberResponseDto memberDto) {
-//    String accessToken = JwtUtil.generateAccessToken(memberDto.id(), memberDto.role().name()); //TODO : role 고민
-//    String refreshToken = JwtUtil.generateRefreshToken(memberDto.id());
-//    RefreshToken token = new RefreshToken(memberDto.id(), refreshToken);
-//    refreshTokenRepository.save(token);
-//
-//    response.setHeader("Authorization", accessToken);
-//    response.setHeader("Refresh-Token", refreshToken);
-//
-//    return ResponseEntity.ok(memberDto);
-//  }
 }

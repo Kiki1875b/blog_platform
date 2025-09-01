@@ -46,14 +46,29 @@ public class Member extends BaseEntity {
   private MemberRole role = MemberRole.USER;
 
   public void updateStatus(MemberStatus status){
+    if(status == null) return;
     this.status = status;
   }
 
   public void updatePassword(String password){
+    if(password == null || password.isEmpty()) return;
     this.password = password;
   }
 
   public void updateRole(MemberRole role){
+    if(role == null) return;
     this.role = role;
   }
+
+  public void updateNickname(String nickname){
+    if(nickname == null || nickname.isEmpty()) return;
+    this.nickname = nickname;
+  }
+
+  public void updateProfileUrl(String profileUrl){
+    if(profileUrl == null || profileUrl.isEmpty()) return;
+    this.profileUrl = profileUrl;
+  }
+
+
 }
