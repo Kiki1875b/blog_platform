@@ -13,7 +13,10 @@ public enum ErrorCode {
   INVALID_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "유효하지 않은 token 입니다."),
 
   PASSWORD_MATCH_ERROR(HttpStatus.BAD_REQUEST, "비밀번호가 틀립니다."),
+
+  // USER
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+  INVALID_S3_PROFILE_KEY(HttpStatus.BAD_REQUEST, "올바르지 않은 s3Key 입니다."),
   USER_NOT_FOUND_BY_EMAIL(HttpStatus.NOT_FOUND, "해당 이메일의 사용자를 찾지 못했습니다."),
   REGISTER_EXCEPTION(HttpStatus.BAD_REQUEST, "회원가입에 실패했습니다.");
 
