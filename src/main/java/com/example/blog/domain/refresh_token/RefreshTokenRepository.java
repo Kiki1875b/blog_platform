@@ -1,6 +1,6 @@
 package com.example.blog.domain.refresh_token;
 
-import java.util.Optional;
+import com.example.blog.domain.refresh_token.entity.RefreshToken;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 

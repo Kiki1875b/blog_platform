@@ -7,21 +7,15 @@ import com.example.blog.auth.jwt.JwtService;
 import com.example.blog.auth.oauth.CustomOAuth2User;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
-import com.example.blog.domain.refresh_token.RefreshToken;
+import com.example.blog.domain.refresh_token.entity.RefreshToken;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +38,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
   @Transactional
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
+
     CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
     String email = oAuth2User.getAttribute("email");
 

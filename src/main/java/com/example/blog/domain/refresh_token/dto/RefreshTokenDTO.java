@@ -1,4 +1,4 @@
-package com.example.blog.domain.refresh_token;
+package com.example.blog.domain.refresh_token.dto;
 
 public record RefreshTokenDTO(
     String refreshToken

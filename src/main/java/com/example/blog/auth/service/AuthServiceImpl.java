@@ -5,23 +5,20 @@ import static com.example.blog.common.utils.CookieUtils.setRefreshCookie;
 
 import com.example.blog.auth.jwt.JwtService;
 import com.example.blog.auth.jwt.TokenInvalidationService;
-import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.auth.dto.RegisterRequestDTO;
-import com.example.blog.common.utils.CookieUtils;
 import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.member.repository.MemberRepository;
-import com.example.blog.domain.refresh_token.RefreshToken;
+import com.example.blog.domain.refresh_token.entity.RefreshToken;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import com.example.blog.mapper.MemberMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -31,7 +28,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 //
@@ -195,6 +191,8 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public MemberResponseDto register(HttpServletResponse res, RegisterRequestDTO dto) {
     if (!Objects.equals(dto.password(), dto.checkPassword())) throw new AuthException(ErrorCode.REGISTER_EXCEPTION);
+    if (emailExists(dto.email())) throw new AuthException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+
     Member m = memberMapper.toEntity(dto);
     m.updatePassword(passwordEncoder.encode(dto.password()));
     m.updateStatus(MemberStatus.ACTIVE);
@@ -269,7 +267,7 @@ public class AuthServiceImpl implements AuthService {
         .filter(c -> REFRESH_COOKIE.equals(c.getName()))
         .map(Cookie::getValue);
 
-    return rts.filter(t -> { try { jwtService.assertValid(t); return true; }
+    return rts.filter(t -> { try { jwtService.assertValid(t); invalidationService.assertNotInvalid(t); return true; }
         catch (Exception e) { return false; } })
         .sorted((a, b) -> {
           long la = Optional.ofNullable(jwtService.parse(a).getIssuedAt()).map(Date::getTime).orElse(0L);
@@ -282,5 +280,10 @@ public class AuthServiceImpl implements AuthService {
               .map(RefreshToken::getToken).filter(st -> st.equals(t)).isPresent();
         })
         .findFirst();
+  }
+
+  /** 이메일 유효성 검증 **/
+  private boolean emailExists(String email){
+    return memberRepository.findByEmail(email).isPresent();
   }
 }

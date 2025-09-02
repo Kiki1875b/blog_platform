@@ -1,4 +1,4 @@
-package com.example.blog.domain.refresh_token;
+package com.example.blog.domain.refresh_token.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
