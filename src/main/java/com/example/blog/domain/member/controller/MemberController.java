@@ -25,8 +25,7 @@ public class MemberController {
 
   private final MemberMapper memberMapper;
   private final MemberService memberService;
-  private final S3Service s3Service;
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping
   public ResponseEntity<MemberResponseDto> updateMember(
       @ModelAttribute UpdateMemberRequestDto updateRequest,
       @AuthenticationPrincipal PrincipalMember principalMember

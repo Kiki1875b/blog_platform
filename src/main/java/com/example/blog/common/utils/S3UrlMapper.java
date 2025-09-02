@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MediaUrlMapper {
+public class S3UrlMapper {
 
   @Value("${app.aws.s3.bucket-url}")
   private String base;

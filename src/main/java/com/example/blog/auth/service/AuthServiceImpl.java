@@ -194,8 +194,7 @@ public class AuthServiceImpl implements AuthService {
   /** 회원가입 */
   @Override
   public MemberResponseDto register(HttpServletResponse res, RegisterRequestDTO dto) {
-    if (!Objects.equals(dto.password(), dto.checkPassword()))
-      throw new AuthException(ErrorCode.REGISTER_EXCEPTION);
+    if (!Objects.equals(dto.password(), dto.checkPassword())) throw new AuthException(ErrorCode.REGISTER_EXCEPTION);
     Member m = memberMapper.toEntity(dto);
     m.updatePassword(passwordEncoder.encode(dto.password()));
     m.updateStatus(MemberStatus.ACTIVE);
@@ -220,20 +219,25 @@ public class AuthServiceImpl implements AuthService {
   public Map<String, Object> refresh(HttpServletRequest req, HttpServletResponse res) {
     String rt = resolveValidRefreshToken(req)
         .orElseThrow(() -> new AuthException(ErrorCode.INVALID_TOKEN_ERROR));
+
     jwtService.assertValid(rt);
     invalidationService.assertNotInvalid(rt);
 
     UUID uid = UUID.fromString(jwtService.parse(rt).getSubject());
+
     RefreshToken stored = refreshTokenRepository.findById(uid)
         .orElseThrow(() -> new AuthException(ErrorCode.INVALID_TOKEN_ERROR));
+
     if (!stored.getToken().equals(rt)) throw new AuthException(ErrorCode.INVALID_TOKEN_ERROR);
 
     Member member = memberRepository.findById(uid)
         .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
+
     String newAccess = jwtService.generateAccessToken(member, member.getRole().name());
     String newRefresh = jwtService.generateRefreshToken(uid);
     stored.updateToken(newRefresh);
     refreshTokenRepository.save(stored);
+    invalidationService.invalidate(rt, jwtService.extractExpiration(rt).toInstant());
 
     clearAllRefreshCookies(res, cookieSecure, sameSite());
     setRefreshCookie(res, newRefresh, cookieSecure, sameSite());
@@ -260,9 +264,11 @@ public class AuthServiceImpl implements AuthService {
   private Optional<String> resolveValidRefreshToken(HttpServletRequest req) {
     Cookie[] cs = req.getCookies();
     if (cs == null) return Optional.empty();
+
     Stream<String> rts = Arrays.stream(cs)
         .filter(c -> REFRESH_COOKIE.equals(c.getName()))
         .map(Cookie::getValue);
+
     return rts.filter(t -> { try { jwtService.assertValid(t); return true; }
         catch (Exception e) { return false; } })
         .sorted((a, b) -> {
