@@ -1,9 +1,11 @@
 package com.example.blog.domain.member.service;
 
 import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.common.exception.MemberException;
+import com.example.blog.common.policy.interf.ProfileImageKeyPolicy;
 import com.example.blog.domain.member.dto.UpdateMemberRequestDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
@@ -23,8 +25,7 @@ public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder encoder;
-  @Value("${cloud.aws.expected-prefix}")
-  private String expectedPrefix;
+  private final ProfileImageKeyPolicy profilePolicy;
   @Override
   @Transactional
   public Member updateMember(UpdateMemberRequestDto request, PrincipalMember member) {
@@ -35,17 +36,12 @@ public class MemberServiceImpl implements MemberService {
     if(foundMember.getProvider() == null) foundMember.updatePassword(encoder.encode(request.password()));
 
     foundMember.updateNickname(request.nickname());
-    validateS3Key(request.s3Key(), foundMember);
+    profilePolicy.validateOwnedKey(request.s3Key(), foundMember.getId());
     foundMember.updateProfileUrl(request.s3Key());
 
     return foundMember;
   }
 
-  private void validateS3Key(String key, Member member){
-    if(key == null || key.isEmpty()) return;
-    String expectedFullPrefix = expectedPrefix + member.getId();
-    if(!key.startsWith(expectedFullPrefix)) throw new MemberException(ErrorCode.INVALID_S3_PROFILE_KEY);
-  }
   private void validatePassword(String currentPassword, String originalPassword){
     if(!encoder.matches(currentPassword, originalPassword)){
       throw new AuthException(ErrorCode.PASSWORD_MATCH_ERROR);

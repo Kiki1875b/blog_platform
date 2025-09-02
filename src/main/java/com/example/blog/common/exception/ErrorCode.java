@@ -11,7 +11,7 @@ public enum ErrorCode {
 
   //Auth Exception
   INVALID_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "유효하지 않은 token 입니다."),
-
+  ALREADY_REGISTERED_EMAIL(HttpStatus.BAD_REQUEST, "이미 등록된 이메일 입니다."),
   PASSWORD_MATCH_ERROR(HttpStatus.BAD_REQUEST, "비밀번호가 틀립니다."),
 
   // USER

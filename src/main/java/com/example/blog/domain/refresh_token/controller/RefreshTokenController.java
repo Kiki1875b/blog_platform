@@ -1,7 +1,8 @@
-package com.example.blog.domain.refresh_token;
+package com.example.blog.domain.refresh_token.controller;
 
 
 import com.example.blog.auth.jwt.JwtService;
+import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
