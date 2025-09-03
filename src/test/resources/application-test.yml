@@ -31,6 +31,8 @@ app:
     secure: false
   jwt:
     secret: test-test-test-test-test-test-test
+    access-exp-ms: 3600000
+    refresh-exp-ms: 1209600000
   client-url: "http://localhost:3000"
   aws:
     s3:
