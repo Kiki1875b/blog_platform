@@ -19,17 +19,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
 public class JwtServiceTest {
   private JwtService jwtService;
-
+  private static final String TEST_SECRET = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+  private static final long TEST_ACCESS_EXP_MS = 60_000L;
+  private static final long TEST_REFRESH_EXP_MS = 1_209_600_000L;
   @BeforeEach
   void setUp(){
     jwtService = new JwtService();
-    ReflectionTestUtils.setField(jwtService, "secret",
-        "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF");
-    ReflectionTestUtils.setField(jwtService, "accessExpMs", 60_000L);
-    ReflectionTestUtils.setField(jwtService, "refreshExpMs", 1_209_600_000L);
+    ReflectionTestUtils.setField(jwtService, "secret", TEST_SECRET);
+    ReflectionTestUtils.setField(jwtService, "accessExpMs", TEST_ACCESS_EXP_MS);
+    ReflectionTestUtils.setField(jwtService, "refreshExpMs", TEST_REFRESH_EXP_MS);
   }
 
   @Test
@@ -96,7 +96,7 @@ public class JwtServiceTest {
 
     String token = jwtService.generateAccessToken(member, "USER");
 
-    jwtService.assertValid(token);
+    assertThatNoException().isThrownBy(() -> jwtService.assertValid(token));
   }
 
   @Test
