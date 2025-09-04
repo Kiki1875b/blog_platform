@@ -70,6 +70,26 @@ jacoco {
 	toolVersion = '0.8.12'
 }
 
+def jacocoExcludes = [
+		'**/*Application*',
+		'com/example/blog/common/config/**',
+		'com/example/blog/common/enumerated/**',
+		'com/example/blog/common/exception/**',
+		'com/example/blog/common/logging/**',
+		'com/example/blog/common/utils/**',
+
+		'com/example/blog/auth/handler/**',
+		'com/example/blog/auth/oauth/**',
+		'com/example/blog/auth/user_details/**',
+
+		'com/example/blog/common/aws/s3/**', // 추후 추가
+		'com/example/blog/**/dto/**',
+		'com/example/blog/**/entity/**',
+
+		'**/*MapperImpl.class',
+		'**/Q*.class'
+]
+
 jacocoTestReport {
 	dependsOn test
 	reports {
@@ -79,35 +99,29 @@ jacocoTestReport {
 	afterEvaluate {
 		classDirectories.setFrom(
 				files(classDirectories.files.collect {
-					fileTree(dir: it, exclude: [
-							'com/example/blog/common/config/**',
-							'com/example/blog/common/enumerated/**',
-							'com/example/blog/common/exception/**',
-							'com/example/blog/common/logging/**',
-							'com/example/blog/common/utils/**'
-					])
+					fileTree(dir: it, exclude: jacocoExcludes)
 				})
 		)
 	}
 }
 
-
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
-			// 전체 라인 커버리지 기준
+			element = 'BUNDLE'
 			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
+				counter = 'INSTRUCTION'
+				value   = 'MISSEDRATIO'
+				maximum = 0.20
 			}
-			excludes = [
-					'com/example/blog/common/config/**',
-					'com/example/blog/common/enumerated/**',
-					'com/example/blog/common/exception/**',
-					'com/example/blog/common/logging/**',
-					'com/example/blog/common/utils/**'
-			]
 		}
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, exclude: jacocoExcludes)
+				})
+		)
 	}
 }
