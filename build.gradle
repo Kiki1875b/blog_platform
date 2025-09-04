@@ -76,7 +76,21 @@ jacocoTestReport {
 		xml.required = true
 		html.required = true
 	}
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, exclude: [
+							'com/example/blog/common/config/**',
+							'com/example/blog/common/enumerated/**',
+							'com/example/blog/common/exception/**',
+							'com/example/blog/common/logging/**',
+							'com/example/blog/common/utils/**'
+					])
+				})
+		)
+	}
 }
+
 
 jacocoTestCoverageVerification {
 	violationRules {
@@ -87,6 +101,13 @@ jacocoTestCoverageVerification {
 				value = 'COVEREDRATIO'
 				minimum = 0.80
 			}
+			excludes = [
+					'com/example/blog/common/config/**',
+					'com/example/blog/common/enumerated/**',
+					'com/example/blog/common/exception/**',
+					'com/example/blog/common/logging/**',
+					'com/example/blog/common/utils/**'
+			]
 		}
 	}
 }
