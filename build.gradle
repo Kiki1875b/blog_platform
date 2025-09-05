@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.example'
@@ -60,6 +61,67 @@ dependencies {
 	implementation 'software.amazon.awssdk:sts:2.25.48'
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport, jacocoTestCoverageVerification
+}
+
+jacoco {
+	toolVersion = '0.8.12'
+}
+
+def jacocoExcludes = [
+		'**/*Application*',
+		'com/example/blog/common/config/**',
+		'com/example/blog/common/enumerated/**',
+		'com/example/blog/common/exception/**',
+		'com/example/blog/common/logging/**',
+		'com/example/blog/common/utils/**',
+
+		'com/example/blog/auth/handler/**',
+		'com/example/blog/auth/oauth/**',
+		'com/example/blog/auth/user_details/**',
+
+		'com/example/blog/common/aws/s3/**', // 추후 추가
+		'com/example/blog/**/dto/**',
+		'com/example/blog/**/entity/**',
+
+		'**/*MapperImpl.class',
+		'**/Q*.class'
+]
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, exclude: jacocoExcludes)
+				})
+		)
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'BUNDLE'
+			limit {
+				counter = 'INSTRUCTION'
+				value   = 'MISSEDRATIO'
+				maximum = 0.20
+			}
+		}
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, exclude: jacocoExcludes)
+				})
+		)
+	}
 }

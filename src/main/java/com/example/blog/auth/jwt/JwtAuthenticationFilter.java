@@ -23,44 +23,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-//@Component
-//@RequiredArgsConstructor
-//public class JwtAuthenticationFilter extends OncePerRequestFilter {
-//
-//  private final MemberRepository memberRepository;
-//  private final JwtService jwtService;
-//  @Override
-//  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-//      FilterChain filterChain) throws ServletException, IOException {
-//    String token = extractTokenFromCookie(request, "ACCESS_TOKEN");
-//    if (token != null) {
-//      try {
-//        Claims claims = jwtService.parseToken(token);
-//        Long userId = Long.parseLong(claims.getSubject());
-//
-//        memberRepository.findById(userId).ifPresent(member -> {
-//          CustomUserDetails userDetails = new CustomUserDetails(member);
-//          UsernamePasswordAuthenticationToken auth =
-//              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//          SecurityContextHolder.getContext().setAuthentication(auth);
-//        });
-//      } catch (Exception e) {
-//        SecurityContextHolder.clearContext();
-//      }
-//    }
-//    filterChain.doFilter(request, response);
-//  }
-//
-//  private String extractTokenFromCookie(HttpServletRequest request, String name) {
-//    if (request.getCookies() == null) return null;
-//    return Arrays.stream(request.getCookies())
-//        .filter(c -> name.equals(c.getName()))
-//        .map(Cookie::getValue)
-//        .findFirst().orElse(null);
-//  }
-//
-//}
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

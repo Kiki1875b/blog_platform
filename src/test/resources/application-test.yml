@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-client
+            client-secret: test-secret
+            scope: profile,email
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+app:
+  cookies:
+    secure: false
+  jwt:
+    secret: test-test-test-test-test-test-test
+    access-exp-ms: 3600000
+    refresh-exp-ms: 1209600000
+  client-url: "http://localhost:3000"
+  aws:
+    s3:
+      bucket: dummy
+      bucket-url: dummy
+custom:
+  oauth2:
+    base-url: "http://localhost:8080"
+
+cloud:
+  aws:
+    credentials:
+      accessKey: dummy
+      secretKey: dummy
+    region:
+      static: ap-northeast-2
+    presigned-url-expiration: 600
+    expected-prefix: uploads/profile/
+

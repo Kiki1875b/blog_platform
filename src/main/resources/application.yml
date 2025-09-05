@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: application-env.properties
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -29,6 +27,8 @@ app:
     secure: true
   jwt:
     secret: ${JWT_SECRET}
+    access-exp-ms: 3600000
+    refresh-exp-ms: 1209600000
   client-url: "http://localhost:3000"
 
 custom:
