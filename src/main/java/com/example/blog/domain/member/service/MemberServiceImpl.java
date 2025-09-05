@@ -31,9 +31,11 @@ public class MemberServiceImpl implements MemberService {
   public Member updateMember(UpdateMemberRequestDto request, PrincipalMember member) {
 
     Member foundMember = findOrThrowMember(member.getMember().getId());
-    // validatePassword(request.password(), foundMember.getPassword());
 
-    if(foundMember.getProvider() == null) foundMember.updatePassword(encoder.encode(request.password()));
+    if(foundMember.getProvider() == null){
+      validatePassword(request.password(), foundMember.getPassword());
+      foundMember.updatePassword(encoder.encode(request.password()));
+    }
 
     foundMember.updateNickname(request.nickname());
     profilePolicy.validateOwnedKey(request.s3Key(), foundMember.getId());
