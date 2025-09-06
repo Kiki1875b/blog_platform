@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
     Member foundMember = findOrThrowMember(member.getMember().getId());
 
     if(foundMember.getProvider() == null){
-      validatePassword(request.password(), foundMember.getPassword());
+      validatePassword(request.currentPassword(), foundMember.getPassword());
       foundMember.updatePassword(encoder.encode(request.password()));
     }
 

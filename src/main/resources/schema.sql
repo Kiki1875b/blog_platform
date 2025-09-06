@@ -48,12 +48,15 @@ CREATE TABLE member_blog_follow (
                                     CONSTRAINT fk_follow_member FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
 );
 
+
+
 CREATE TABLE blog_stat (
                            id              UUID PRIMARY KEY,
                            post_count      BIGINT NOT NULL DEFAULT 0,
                            view_count      BIGINT NOT NULL DEFAULT 0,
                            follower_count  BIGINT NOT NULL DEFAULT 0,
-                           last_recalculated_at TIMESTAMPTZ,
+                           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                           updated_at TIMESTAMPTZ null,
                            CONSTRAINT fk_blog_stat_blog FOREIGN KEY (id)
                                REFERENCES blogs(id) ON DELETE CASCADE
 );
@@ -66,11 +69,12 @@ CREATE TABLE tags (
 
 
 CREATE TABLE blog_tags (
+                           id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                            blog_id    UUID NOT NULL,
                            tag_id     UUID NOT NULL,
                            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-                           CONSTRAINT pk_blog_tags PRIMARY KEY (blog_id, tag_id),
+                           CONSTRAINT uk_blog_tags unique (blog_id, tag_id),
                            CONSTRAINT fk_blog_tags_blog FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
                            CONSTRAINT fk_blog_tags_tag  FOREIGN KEY (tag_id)  REFERENCES tags(id)  ON DELETE CASCADE
 );
@@ -85,18 +89,18 @@ CREATE TABLE posts (
                            CHECK (state IN ('PUBLIC','PRIVATE')),
                        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                        updated_at   TIMESTAMPTZ,
-                       published_at TIMESTAMPTZ,               -- 비공개에서 공개 전환 시각 등(선택)
 
                        CONSTRAINT fk_posts_blog  FOREIGN KEY (blog_id) REFERENCES blogs(id)   ON DELETE CASCADE,
                        CONSTRAINT fk_posts_user  FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
 );
 
 CREATE TABLE post_tags (
+                           id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                            post_id    UUID NOT NULL,
                            tag_id     UUID NOT NULL,
                            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-                           CONSTRAINT pk_post_tags PRIMARY KEY (post_id, tag_id),
+                           CONSTRAINT uk_post_tags UNIQUE (post_id, tag_id),
                            CONSTRAINT fk_post_tags_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
                            CONSTRAINT fk_post_tags_tag  FOREIGN KEY (tag_id)  REFERENCES tags(id)  ON DELETE CASCADE
 );
@@ -117,22 +121,24 @@ CREATE TABLE comments (
 );
 
 CREATE TABLE post_likes (
+                            id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                             post_id    UUID NOT NULL,
                             member_id    UUID NOT NULL,
                             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-                            CONSTRAINT pk_post_likes PRIMARY KEY (post_id, member_id),
+                            CONSTRAINT uk_post_likes UNIQUE (post_id, member_id),
                             CONSTRAINT fk_post_likes_post   FOREIGN KEY (post_id) REFERENCES posts(id)   ON DELETE CASCADE,
                             CONSTRAINT fk_post_likes_member FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE comment_likes (
+                               id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                                comment_id UUID NOT NULL,
                                member_id    UUID NOT NULL,
                                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-                               CONSTRAINT pk_comment_likes PRIMARY KEY (comment_id, member_id),
+                               CONSTRAINT uk_comment_likes unique (comment_id, member_id),
                                CONSTRAINT fk_comment_likes_comment FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
                                CONSTRAINT fk_comment_likes_member  FOREIGN KEY (member_id)    REFERENCES members(id) ON DELETE CASCADE
 );
