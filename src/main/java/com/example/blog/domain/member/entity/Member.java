@@ -3,6 +3,7 @@ package com.example.blog.domain.member.entity;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.enumerated.Provider;
 import com.example.blog.domain.base.BaseEntity;
+import com.example.blog.domain.base.BaseUpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-public class Member extends BaseEntity {
+public class Member extends BaseUpdatableEntity {
 
   @Column(nullable = false, unique = true)
   private String email;

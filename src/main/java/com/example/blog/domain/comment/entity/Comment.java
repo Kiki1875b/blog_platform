@@ -1,6 +1,7 @@
 package com.example.blog.domain.comment.entity;
 
 import com.example.blog.domain.base.BaseEntity;
+import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.post.entity.Post;
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Comment extends BaseEntity {
+public class Comment extends BaseUpdatableEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "post_id", nullable = false)

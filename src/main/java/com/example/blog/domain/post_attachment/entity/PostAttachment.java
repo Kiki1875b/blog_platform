@@ -1,6 +1,8 @@
 package com.example.blog.domain.post_attachment.entity;
 
 
+import com.example.blog.domain.base.BaseEntity;
+import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.post.entity.Post;
 import jakarta.persistence.Column;
@@ -11,29 +13,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.Instant;
-import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 @Entity(name = "post_attachments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+public class PostAttachment extends BaseEntity {
 
-public class PostAttachment {
-
-  @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false)
-  private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "post_id", nullable = false)
@@ -51,7 +43,4 @@ public class PostAttachment {
 
   private long fileSize;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private Instant createdAt;
 }

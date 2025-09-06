@@ -1,6 +1,7 @@
 package com.example.blog.domain.blog.entity;
 
 import com.example.blog.domain.base.BaseEntity;
+import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-public class Blog extends BaseEntity {
+public class Blog extends BaseUpdatableEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")

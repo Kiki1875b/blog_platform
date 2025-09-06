@@ -24,14 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity(name = "blog_tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class BlogTag{
-
-  @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false)
-  private UUID id;
+public class BlogTag extends BaseEntity{
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "blog_id", nullable = false)
@@ -41,7 +34,4 @@ public class BlogTag{
   @JoinColumn(name = "tag_id", nullable = false)
   private Tag tag;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private Instant createdAt;
 }

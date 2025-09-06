@@ -1,5 +1,6 @@
 package com.example.blog.domain.comment_like.entity;
 
+import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.comment.entity.Comment;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.post.entity.Post;
@@ -25,13 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class CommentLike {
-  @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false)
-  private UUID id;
+public class CommentLike extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "comment_id", nullable = false)
@@ -41,7 +36,4 @@ public class CommentLike {
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private Instant createdAt;
 }

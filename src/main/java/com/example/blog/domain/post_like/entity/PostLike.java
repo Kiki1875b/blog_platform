@@ -1,5 +1,6 @@
 package com.example.blog.domain.post_like.entity;
 
+import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.post.entity.Post;
 import jakarta.persistence.Column;
@@ -26,13 +27,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 
-public class PostLike {
-
-  @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false)
-  private UUID id;
+public class PostLike extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "post_id", nullable = false)
@@ -42,7 +37,4 @@ public class PostLike {
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private Instant createdAt;
 }
