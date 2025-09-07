@@ -9,6 +9,8 @@ import com.example.blog.common.policy.interf.ProfileImageKeyPolicy;
 import com.example.blog.domain.member.dto.UpdateMemberRequestDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
+import com.example.blog.domain.member.repository.MemberRepositoryAdapter;
+import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-  private final MemberRepository memberRepository;
+  private final MemberRepositoryPort memberPort;
   private final PasswordEncoder encoder;
   private final ProfileImageKeyPolicy profilePolicy;
 
   @Override
   public Member findMember(CustomPrincipal principal) {
-    return memberRepository.findById(principal.id()).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
+    return memberPort.findById(principal.id()).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
   }
 
   @Override
@@ -57,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
   }
 
   private Member findOrThrowMember(UUID memberId){
-    return memberRepository.findById(memberId)
+    return memberPort.findById(memberId)
         .orElseThrow(()-> new MemberException(ErrorCode.USER_NOT_FOUND));
   }
 }

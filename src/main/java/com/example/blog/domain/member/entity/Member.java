@@ -35,7 +35,7 @@ public class Member extends BaseUpdatableEntity {
   private String providerId;
 
   @Enumerated(EnumType.STRING)
-  private MemberStatus status;
+  private MemberStatus status = MemberStatus.ACTIVE;
 
   @Column(nullable = true)
   private String profileUrl;

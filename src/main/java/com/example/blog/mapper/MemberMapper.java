@@ -20,6 +20,7 @@ public interface MemberMapper {
   Member toEntity(RegisterRequestDTO dto);
 
   @Mapping(target = "role", constant = "USER")
+  @Mapping(target = "status", constant = "ACTIVE")
   Member fromOAuthToMember(String name, String email, String providerId, Provider provider, String nickname);
 
   @Mapping(target = "profileUrl", source = "profileUrl", qualifiedByName = "toPublicUrl")

@@ -76,4 +76,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     response.setContentType("application/json");
     response.getWriter().write("{\"error\": \"" + reason + "\"}");
   }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    String path = request.getServletPath();
+    return path.startsWith("/api/auth/") || path.startsWith("/api/public/") || path.equals("/api/token/refresh");
+  }
 }

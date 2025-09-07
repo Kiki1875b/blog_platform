@@ -13,14 +13,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @Entity(name = "blog_tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -34,4 +37,17 @@ public class BlogTag extends BaseEntity{
   @JoinColumn(name = "tag_id", nullable = false)
   private Tag tag;
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof BlogTag)) return false;
+    BlogTag that = (BlogTag) o;
+    return Objects.equals(blog.getId(), that.blog.getId()) &&
+        Objects.equals(tag.getId(), that.tag.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(blog.getId(), tag.getId());
+  }
 }
