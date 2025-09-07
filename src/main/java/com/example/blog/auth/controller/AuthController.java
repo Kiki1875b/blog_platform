@@ -3,9 +3,10 @@ package com.example.blog.auth.controller;
 
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.auth.service.AuthService;
-import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.domain.member.dto.MemberResponseDto;
+import com.example.blog.domain.member.service.MemberService;
 import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import com.example.blog.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ public class AuthController {
   private final AuthService authService;
   private final RefreshTokenRepository refreshTokenRepository;
   private final MemberMapper memberMapper;
+  private final MemberService memberService;
 
   @PostMapping("/register")
   public ResponseEntity<Void> register(HttpServletResponse response, @RequestBody RegisterRequestDTO register){
@@ -36,20 +38,19 @@ public class AuthController {
   }
 
   @PostMapping("/signout")
-  public ResponseEntity<Void> signOut(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal PrincipalMember member){
-    authService.signOut(request, response, member);
+  public ResponseEntity<Void> signOut(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal CustomPrincipal principal){
+    authService.signOut(request, response, principal);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/me")
-  public ResponseEntity<MemberResponseDto> getMe(HttpServletRequest req, HttpServletResponse res, @AuthenticationPrincipal PrincipalMember
-      authentication){
+  public ResponseEntity<MemberResponseDto> getMe(HttpServletRequest req, HttpServletResponse res, @AuthenticationPrincipal CustomPrincipal principal){
 
-    if(authentication == null){
+    if(principal == null){
       return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
     }
 
-    MemberResponseDto dto = memberMapper.toResponseDto(((PrincipalMember) authentication).getMember());
+    MemberResponseDto dto = memberMapper.toResponseDto(memberService.findMember(principal));
     return ResponseEntity.ok(dto);
   }
 

@@ -1,6 +1,6 @@
 package com.example.blog.common.aws.s3;
 
-import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,10 +27,10 @@ public class S3Service {
   private Long presignExpiration;
 
   public Map<String, Object> generateProfilePresignedUploadUrl(
-      String originalFileName, String contentType, PrincipalMember member
+      String originalFileName, String contentType, CustomPrincipal principal
   ){
 
-    String key = "uploads/profile/%s-%s".formatted(member.getMember().getId(), originalFileName);
+    String key = "uploads/profile/%s-%s".formatted(principal.id(), originalFileName);
 
     PutObjectRequest objectRequest = PutObjectRequest.builder()
         .bucket(bucket)

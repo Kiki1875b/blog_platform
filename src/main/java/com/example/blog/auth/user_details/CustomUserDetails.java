@@ -1,6 +1,5 @@
 package com.example.blog.auth.user_details;
 
-import com.example.blog.auth.service.PrincipalMember;
 import com.example.blog.domain.member.entity.Member;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails, PrincipalMember {
+public class CustomUserDetails implements UserDetails{
 
   private final Member member;
   @Override
@@ -20,10 +19,6 @@ public class CustomUserDetails implements UserDetails, PrincipalMember {
     return List.of(new SimpleGrantedAuthority("ROLE_"+member.getRole().name()));
   }
 
-  @Override
-  public boolean isOAuthUser() {
-    return false;
-  }
 
   @Override
   public String getPassword() {

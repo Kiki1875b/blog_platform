@@ -76,7 +76,11 @@ public class JwtAuthenticationFilterTest {
 
     given(claims.getSubject()).willReturn(userId.toString());
     given(jwtService.parse(token)).willReturn(claims);
-    given(memberRepository.findById(userId)).willReturn(Optional.of(m));
+
+    given(claims.get("status", String.class)).willReturn("ACTIVE");
+    given(claims.get("email", String.class)).willReturn("test");
+    given(claims.get("role", String.class)).willReturn("USER");
+    given(claims.get("name", String.class)).willReturn("test");
 
     MockHttpServletRequest req = new MockHttpServletRequest();
     MockHttpServletResponse res = new MockHttpServletResponse();
@@ -101,7 +105,7 @@ public class JwtAuthenticationFilterTest {
     given(claims.getSubject()).willReturn(userId.toString());
     given(jwtService.parse(token)).willReturn(claims);
     given(memberRepository.findById(userId)).willReturn(Optional.empty());
-
+    given(claims.get("status", String.class)).willReturn("ACTIVE");
     MockHttpServletRequest req = new MockHttpServletRequest();
     req.addHeader("Authorization", "Bearer " + token);
     MockHttpServletResponse res = new MockHttpServletResponse();
@@ -112,7 +116,6 @@ public class JwtAuthenticationFilterTest {
     // then
     assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     then(jwtService).should().parse(token);
-    then(memberRepository).should().findById(userId);
   }
 
 

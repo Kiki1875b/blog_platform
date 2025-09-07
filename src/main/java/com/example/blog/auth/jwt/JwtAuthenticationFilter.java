@@ -1,5 +1,6 @@
 package com.example.blog.auth.jwt;
 
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
+
     String authHeader = request.getHeader("Authorization");
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -41,17 +44,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Claims claims = jwtService.parse(token);
         UUID userId = UUID.fromString(claims.getSubject());
 
-        memberRepository.findById(userId).ifPresent(member -> {
-          CustomUserDetails userDetails = new CustomUserDetails(member);
-          UsernamePasswordAuthenticationToken auth =
-              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-          SecurityContextHolder.getContext().setAuthentication(auth);
-        });
+        String email = claims.get("email", String.class);
+        String role = claims.get("role", String.class);
+        String name = claims.get("name", String.class);
+        String status = claims.get("status", String.class);
+
+        if (!"ACTIVE".equals(status)) {
+          unauthorized(response, "inactive_account");
+          return;
+        }
+
+        CustomPrincipal principal = new CustomPrincipal(userId, email, role, status);
+
+        UsernamePasswordAuthenticationToken auth =
+            new UsernamePasswordAuthenticationToken(principal, null, principal.authorities());
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
       } catch (Exception e) {
         SecurityContextHolder.clearContext();
+        unauthorized(response, "invalid_token");
+        return;
       }
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private void unauthorized(HttpServletResponse response, String reason) throws IOException {
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setContentType("application/json");
+    response.getWriter().write("{\"error\": \"" + reason + "\"}");
   }
 }

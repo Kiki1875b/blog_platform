@@ -3,7 +3,7 @@ package com.example.blog.domain.member;
 
 import static org.mockito.BDDMockito.*;
 
-import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.enumerated.Provider;
@@ -53,7 +53,7 @@ public class MemberServiceImplTest {
   void 유효한_데이터로_사용자를_업데이트할_수_있다(){
     // given
     UpdateMemberRequestDto updateDto = new UpdateMemberRequestDto("update nick", "newPwd", "pwd", "s3Key");
-    PrincipalMember principalMember = new CustomUserDetails(member);
+    CustomPrincipal principal = new CustomPrincipal(member.getId(), member.getEmail(), member.getRole().toString(), member.getStatus().toString());
     given(memberRepository.findById(member.getId())).willReturn(
         Optional.ofNullable(member));
     given(encoder.matches(anyString(), anyString())).willReturn(true);
@@ -61,7 +61,7 @@ public class MemberServiceImplTest {
     willDoNothing().given(policy).validateOwnedKey(anyString(), any());
 
     // when
-    Member member1 = memberService.updateMember(updateDto, principalMember  );
+    Member member1 = memberService.updateMember(updateDto, principal  );
 
     // then
     Assertions.assertThat(member1.getNickname()).isEqualTo("update nick");
@@ -73,13 +73,14 @@ public class MemberServiceImplTest {
     // given
     ReflectionTestUtils.setField(member, "provider", Provider.GOOGLE);
     UpdateMemberRequestDto updateDto = new UpdateMemberRequestDto("update nick", "newPwd", "pwd", "s3Key");
-    PrincipalMember principalMember = new CustomUserDetails(member);
+    CustomPrincipal principal = new CustomPrincipal(member.getId(), member.getEmail(), member.getRole().toString(), member.getStatus().toString());
+
     given(memberRepository.findById(member.getId())).willReturn(
         Optional.ofNullable(member));
     willDoNothing().given(policy).validateOwnedKey(anyString(), any());
 
     //when
-    Member member1 = memberService.updateMember(updateDto, principalMember  );
+    Member member1 = memberService.updateMember(updateDto, principal  );
 
     //then
     Assertions.assertThat(member1.getNickname()).isEqualTo("update nick");

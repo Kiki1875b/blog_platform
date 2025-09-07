@@ -1,7 +1,8 @@
 package com.example.blog.common.aws.s3;
 
 
-import com.example.blog.auth.service.PrincipalMember;
+
+import com.example.blog.auth.user_details.CustomPrincipal;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,11 @@ public class S3Controller {
   @PostMapping("/presign")
   public ResponseEntity<Map<String,Object>> presign(
       @RequestBody PresignRequestDto request,
-      @AuthenticationPrincipal PrincipalMember member
+      @AuthenticationPrincipal CustomPrincipal principal
   ){
 
     return ResponseEntity.ok(
-        s3Service.generateProfilePresignedUploadUrl(request.fileName(), request.contentType(), member)
+        s3Service.generateProfilePresignedUploadUrl(request.fileName(), request.contentType(), principal)
     );
   }
 

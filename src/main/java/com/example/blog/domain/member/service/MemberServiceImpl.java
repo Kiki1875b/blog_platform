@@ -1,6 +1,6 @@
 package com.example.blog.domain.member.service;
 
-import com.example.blog.auth.service.PrincipalMember;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
@@ -26,11 +26,17 @@ public class MemberServiceImpl implements MemberService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder encoder;
   private final ProfileImageKeyPolicy profilePolicy;
+
+  @Override
+  public Member findMember(CustomPrincipal principal) {
+    return memberRepository.findById(principal.id()).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
+  }
+
   @Override
   @Transactional
-  public Member updateMember(UpdateMemberRequestDto request, PrincipalMember member) {
+  public Member updateMember(UpdateMemberRequestDto request, CustomPrincipal principal) {
 
-    Member foundMember = findOrThrowMember(member.getMember().getId());
+    Member foundMember = findOrThrowMember(principal.id());
 
     if(foundMember.getProvider() == null){
       validatePassword(request.currentPassword(), foundMember.getPassword());

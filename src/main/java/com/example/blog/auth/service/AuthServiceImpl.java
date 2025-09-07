@@ -5,6 +5,7 @@ import static com.example.blog.common.utils.CookieUtils.setRefreshCookie;
 
 import com.example.blog.auth.jwt.JwtService;
 import com.example.blog.auth.jwt.TokenInvalidationService;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
@@ -68,13 +69,13 @@ public class AuthServiceImpl implements AuthService {
 
   /** 로그아웃: 토큰 무효화 + 저장본 삭제 + 쿠키 정리 */
   @Override
-  public void signOut(HttpServletRequest req, HttpServletResponse res, PrincipalMember pm) {
+  public void signOut(HttpServletRequest req, HttpServletResponse res, CustomPrincipal principal) {
     extractAccessTokenFromHeader(req).ifPresent(t ->
         invalidationService.invalidate(t, jwtService.extractExpiration(t).toInstant()));
 
     extractCookie(req, REFRESH_COOKIE).ifPresent(t ->
         invalidationService.invalidate(t, jwtService.extractExpiration(t).toInstant()));
-    refreshTokenRepository.deleteById(pm.getMember().getId());
+    refreshTokenRepository.deleteById(principal.id());
     clearAllRefreshCookies(res, cookieSecure, sameSite());
     res.setStatus(HttpServletResponse.SC_OK);
   }
