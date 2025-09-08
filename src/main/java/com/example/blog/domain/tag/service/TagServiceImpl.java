@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -16,7 +17,8 @@ public class TagServiceImpl implements TagService{
 
   private final TagRepository tagRepository;
   @Override
-  public List<Tag> createTags(List<String> tags) {
+  @Transactional
+  public List<Tag> getOrCreateTags(List<String> tags) {
     Set<Tag> existingTags = tagRepository.findAllByNameIn(tags);
     Set<String> existingNames = existingTags.stream().map(Tag::getName).collect(Collectors.toSet());
 

@@ -4,5 +4,5 @@ import com.example.blog.domain.tag.entity.Tag;
 import java.util.List;
 
 public interface TagService {
-  List<Tag> createTags(List<String> tags);
+  List<Tag> getOrCreateTags(List<String> tags);
 }

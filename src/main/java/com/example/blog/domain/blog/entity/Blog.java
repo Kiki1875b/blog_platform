@@ -1,6 +1,5 @@
 package com.example.blog.domain.blog.entity;
 
-import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.blog_tag.entity.BlogTag;
 import com.example.blog.domain.member.entity.Member;
@@ -14,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +24,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
-@Entity(name = "blogs")
+@Entity
+@Table(name = "blogs")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -34,11 +35,17 @@ public class Blog extends BaseUpdatableEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
   private Member member;
+
+  @Column(nullable = false)
   private String title;
+
+  @Column(nullable = false)
   private String description;
+
   @Enumerated(value = EnumType.STRING)
   private BlogVisibility visibility = BlogVisibility.PUBLIC;
-  @Column(unique = true)
+
+  @Column(unique = true, nullable = false)
   private String slug;
 
   @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)

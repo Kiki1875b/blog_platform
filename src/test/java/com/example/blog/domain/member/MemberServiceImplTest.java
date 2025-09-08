@@ -1,17 +1,20 @@
 package com.example.blog.domain.member;
 
 
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import com.example.blog.auth.user_details.CustomPrincipal;
-import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.enumerated.Provider;
 import com.example.blog.common.policy.interf.ProfileImageKeyPolicy;
 import com.example.blog.domain.member.dto.UpdateMemberRequestDto;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
-import com.example.blog.domain.member.repository.MemberRepository;
+import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import com.example.blog.domain.member.service.MemberServiceImpl;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,7 +33,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class MemberServiceImplTest {
 
   @Mock
-  MemberRepository memberRepository;
+  MemberRepositoryPort memberRepository;
   @Mock
   PasswordEncoder encoder;
   @Mock

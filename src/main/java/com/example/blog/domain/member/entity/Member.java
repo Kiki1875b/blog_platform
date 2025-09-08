@@ -2,7 +2,6 @@ package com.example.blog.domain.member.entity;
 
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.enumerated.Provider;
-import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.base.BaseUpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,13 +11,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@ToString
 public class Member extends BaseUpdatableEntity {
 
   @Column(nullable = false, unique = true)

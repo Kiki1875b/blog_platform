@@ -4,10 +4,8 @@ package com.example.blog.auth.controller;
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.auth.service.AuthService;
 import com.example.blog.auth.user_details.CustomPrincipal;
-import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.service.MemberService;
-import com.example.blog.domain.refresh_token.RefreshTokenRepository;
 import com.example.blog.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final AuthService authService;
-  private final RefreshTokenRepository refreshTokenRepository;
   private final MemberMapper memberMapper;
   private final MemberService memberService;
 
@@ -44,7 +41,7 @@ public class AuthController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<MemberResponseDto> getMe(HttpServletRequest req, HttpServletResponse res, @AuthenticationPrincipal CustomPrincipal principal){
+  public ResponseEntity<?> getMe(HttpServletRequest req, HttpServletResponse res, @AuthenticationPrincipal CustomPrincipal principal){
 
     if(principal == null){
       return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();

@@ -1,20 +1,16 @@
 package com.example.blog.domain.member.service;
 
 import com.example.blog.auth.user_details.CustomPrincipal;
-import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.common.exception.AuthException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.common.exception.MemberException;
 import com.example.blog.common.policy.interf.ProfileImageKeyPolicy;
 import com.example.blog.domain.member.dto.UpdateMemberRequestDto;
 import com.example.blog.domain.member.entity.Member;
-import com.example.blog.domain.member.repository.MemberRepository;
-import com.example.blog.domain.member.repository.MemberRepositoryAdapter;
 import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +36,7 @@ public class MemberServiceImpl implements MemberService {
 
     Member foundMember = findOrThrowMember(principal.id());
 
-    if(foundMember.getProvider() == null){
+    if(foundMember.getProvider() == null && !isPasswordBlank(request.password()) ){
       validatePassword(request.currentPassword(), foundMember.getPassword());
       foundMember.updatePassword(encoder.encode(request.password()));
     }
@@ -61,5 +57,9 @@ public class MemberServiceImpl implements MemberService {
   private Member findOrThrowMember(UUID memberId){
     return memberPort.findById(memberId)
         .orElseThrow(()-> new MemberException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  private boolean isPasswordBlank(String password){
+    return password == null || password.isEmpty();
   }
 }
