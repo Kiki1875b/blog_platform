@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.*;
 import com.example.blog.auth.dto.RegisterRequestDTO;
 import com.example.blog.auth.jwt.JwtService;
 import com.example.blog.auth.jwt.TokenInvalidationService;
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.auth.user_details.CustomUserDetails;
 import com.example.blog.common.enumerated.MemberStatus;
 import com.example.blog.common.exception.AuthException;
@@ -135,7 +136,7 @@ public class AuthServiceTest {
   @DisplayName("로그아웃 성공")
   void 로그아웃_성공(){
     // given
-    PrincipalMember principalMember = new CustomUserDetails(m);
+    CustomPrincipal principal = new CustomPrincipal(UUID.randomUUID(), "test", "test", "ACTIVE");
     String accessToken = "accessToken";
     String refreshToken = "refreshToken";
     Date expiration = new Date();
@@ -146,7 +147,7 @@ public class AuthServiceTest {
     given(jwtService.extractExpiration(refreshToken)).willReturn(expiration);
 
     // when
-    authService.signOut(request, response, principalMember);
+    authService.signOut(request, response, principal);
 
     // then
     verify(invalidationService).invalidate(eq(accessToken), any());

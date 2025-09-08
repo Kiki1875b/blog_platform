@@ -1,30 +1,29 @@
 package com.example.blog.domain.refresh_token.entity;
 
-import com.example.blog.domain.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.PreUpdate;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class RefreshToken {
 
   @Id
-  @Column(updatable = false, nullable = false, name = "member_id")
+  @Column(updatable = false, nullable = false, name = "member_id", columnDefinition = "UUID")
   private UUID memberId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String token;
 
   public RefreshToken(UUID memberId, String token){
@@ -41,10 +40,7 @@ public class RefreshToken {
   private Instant createdAt;
 
   @Column(name = "updated_at")
+  @LastModifiedDate
   private Instant updatedAt;
 
-  @PreUpdate
-  private void onUpdate(){
-    this.updatedAt = Instant.now();
-  }
 }

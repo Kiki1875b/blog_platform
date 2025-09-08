@@ -44,6 +44,7 @@ public class JwtService {
         .claim("role", role)
         .claim("email", member.getEmail())
         .claim("name", member.getName())
+        .claim("status", member.getStatus())
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + accessExpMs))
         .signWith(key())

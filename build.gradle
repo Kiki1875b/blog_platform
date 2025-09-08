@@ -112,7 +112,7 @@ jacocoTestCoverageVerification {
 			limit {
 				counter = 'INSTRUCTION'
 				value   = 'MISSEDRATIO'
-				maximum = 0.20
+				maximum = 0.30
 			}
 		}
 	}

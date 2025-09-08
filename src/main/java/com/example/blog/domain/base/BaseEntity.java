@@ -20,20 +20,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public abstract class BaseEntity {
 
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(updatable = false, nullable = false)
   private UUID id;
 
   @CreatedDate
   @Column(nullable = false)
   private Instant createdAt;
-
-  @Column(name = "updated_at")
-  private Instant updatedAt;
-
-  @PreUpdate
-  private void onUpdate(){
-    this.updatedAt = Instant.now();
-  }
 }

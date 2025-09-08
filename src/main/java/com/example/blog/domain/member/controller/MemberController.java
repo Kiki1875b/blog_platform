@@ -1,7 +1,8 @@
 package com.example.blog.domain.member.controller;
 
 
-import com.example.blog.auth.service.PrincipalMember;
+
+import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.aws.s3.S3Service;
 import com.example.blog.domain.member.dto.MemberResponseDto;
 import com.example.blog.domain.member.dto.UpdateMemberRequestDto;
@@ -28,10 +29,10 @@ public class MemberController {
   @PostMapping
   public ResponseEntity<MemberResponseDto> updateMember(
       @ModelAttribute UpdateMemberRequestDto updateRequest,
-      @AuthenticationPrincipal PrincipalMember principalMember
+      @AuthenticationPrincipal CustomPrincipal principal
   ){
 
-    MemberResponseDto response = memberMapper.toResponseDto(memberService.updateMember(updateRequest, principalMember));
+    MemberResponseDto response = memberMapper.toResponseDto(memberService.updateMember(updateRequest, principal));
     return ResponseEntity.ok(response);
   }
 }
