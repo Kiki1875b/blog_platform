@@ -5,6 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BlogRepository extends JpaRepository<Blog, UUID> {
+public interface BlogRepository extends JpaRepository<Blog, UUID>, BlogQueryRepository {
   Optional<Blog> findBySlug(String slug);
 }

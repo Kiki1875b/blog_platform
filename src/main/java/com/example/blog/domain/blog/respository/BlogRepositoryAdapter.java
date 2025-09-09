@@ -1,7 +1,10 @@
 package com.example.blog.domain.blog.respository;
 
+import com.example.blog.domain.blog.dto.BlogPaginationRequest;
 import com.example.blog.domain.blog.entity.Blog;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class BlogRepositoryAdapter implements BlogRepositoryPort{
 
   private final BlogRepository blogRepository;
+
   @Override
   public Optional<Blog> findBySlug(String slug) {
     return blogRepository.findBySlug(slug);
@@ -19,5 +23,10 @@ public class BlogRepositoryAdapter implements BlogRepositoryPort{
   @Override
   public Blog save(Blog blog) {
     return blogRepository.save(blog);
+  }
+
+  @Override
+  public List<Blog> findByMemberIdAndQuery(UUID memberId, BlogPaginationRequest query) {
+    return blogRepository.findByMemberIdAndQuery(memberId, query);
   }
 }
