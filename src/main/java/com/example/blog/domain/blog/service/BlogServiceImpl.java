@@ -59,17 +59,9 @@ public class BlogServiceImpl implements BlogService{
   @Override
   @Transactional
   public PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId, BlogPaginationRequest request) {
-    memberPort.findById(memberId).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
-
     List<Blog> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
     PageInfo pageInfo = PaginationUtil.createPageInfo(blogs, request.limit());
     List<BlogResponseDto> responseDtoList = blogMapper.toResponseList(blogs);
     return new PaginatedResponse<>(responseDtoList, pageInfo);
   }
-
-  private boolean queryResultHasNext(int size, int target){
-    return target < size;
-  }
-
-
 }

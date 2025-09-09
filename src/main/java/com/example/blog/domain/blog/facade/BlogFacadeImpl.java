@@ -8,6 +8,7 @@ import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.service.BlogService;
 import com.example.blog.domain.blog_stat.service.BlogStatService;
+import com.example.blog.domain.member.service.MemberService;
 import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.domain.tag.service.TagService;
 import com.example.blog.mapper.BlogMapper;
@@ -24,6 +25,7 @@ public class BlogFacadeImpl implements BlogFacade{
   private final TagService tagService;
   private final BlogStatService blogStatService;
   private final BlogMapper blogMapper;
+  private final MemberService memberService;
 
   @Override
   public BlogResponseDto createBlog(CreateBlogRequestDto request, CustomPrincipal principal) {
@@ -40,6 +42,7 @@ public class BlogFacadeImpl implements BlogFacade{
   @Override
   public PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId,
       BlogPaginationRequest request) {
+    memberService.findMemberById(memberId);
     return blogService.getMemberBlogs(memberId, request);
   }
 }
