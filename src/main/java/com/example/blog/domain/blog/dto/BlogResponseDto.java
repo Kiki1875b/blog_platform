@@ -4,7 +4,9 @@ import com.example.blog.domain.blog.entity.BlogVisibility;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import lombok.Builder;
 
+@Builder
 public record BlogResponseDto(
    UUID blogId,
    UUID memberId,

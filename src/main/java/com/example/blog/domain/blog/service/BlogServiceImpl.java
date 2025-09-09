@@ -4,6 +4,10 @@ import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.exception.BlogException;
 import com.example.blog.common.exception.ErrorCode;
 import com.example.blog.common.exception.MemberException;
+import com.example.blog.common.pagenation.PageInfo;
+import com.example.blog.common.pagenation.PaginatedResponse;
+import com.example.blog.common.pagenation.PaginationUtil;
+import com.example.blog.domain.blog.dto.BlogPaginationRequest;
 import com.example.blog.domain.blog.dto.BlogResponseDto;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
@@ -11,9 +15,9 @@ import com.example.blog.domain.blog.respository.BlogRepositoryPort;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import com.example.blog.domain.tag.entity.Tag;
-import com.example.blog.domain.tag.service.TagService;
 import com.example.blog.mapper.BlogMapper;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,10 +31,10 @@ public class BlogServiceImpl implements BlogService{
   private final MemberRepositoryPort memberPort;
   private final BlogRepositoryPort blogPort;
   private final BlogMapper blogMapper;
-  private final TagService tagService;
+
   @Override
   @Transactional
-  public BlogResponseDto createBlog(CreateBlogRequestDto request, CustomPrincipal principal) {
+  public Blog createBlog(CreateBlogRequestDto request, CustomPrincipal principal) {
 
     if (blogPort.findBySlug(request.slug()).isPresent()) {
       throw new BlogException(ErrorCode.DUPLICATE_SLUG_EXCEPTION);
@@ -38,14 +42,34 @@ public class BlogServiceImpl implements BlogService{
 
     Member member = memberPort.findById(principal.id())
         .orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
-    List<Tag> tags = tagService.getOrCreateTags(request.tags());
-    List<String> tagStrings = tags.stream().map(Tag::getName).toList();
 
-    Blog blog = blogMapper.toEntity(request, member);
-    blog.addTags(tags);
-    Blog saved = blogPort.save(blog);
-
-    return blogMapper.toResponse(blog, tagStrings);
-
+    return blogMapper.toEntity(request, member);
   }
+
+  @Override
+  public void addTags(List<Tag> tags, Blog blog){
+    blog.addTags(tags);
+  }
+
+  @Override
+  public Blog saveBlog(Blog blog){
+    return blogPort.save(blog);
+  }
+
+  @Override
+  @Transactional
+  public PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId, BlogPaginationRequest request) {
+    memberPort.findById(memberId).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
+
+    List<Blog> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
+    PageInfo pageInfo = PaginationUtil.createPageInfo(blogs, request.limit());
+    List<BlogResponseDto> responseDtoList = blogMapper.toResponseList(blogs);
+    return new PaginatedResponse<>(responseDtoList, pageInfo);
+  }
+
+  private boolean queryResultHasNext(int size, int target){
+    return target < size;
+  }
+
+
 }
