@@ -53,6 +53,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	implementation 'org.postgresql:postgresql:42.7.4' // postgresql
+	testImplementation "org.testcontainers:junit-jupiter"
+	testImplementation "org.testcontainers:postgresql"
+
 
 	// aws
 	implementation 'software.amazon.awssdk:s3:2.25.48'

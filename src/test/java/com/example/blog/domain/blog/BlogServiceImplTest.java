@@ -2,7 +2,6 @@ package com.example.blog.domain.blog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -11,7 +10,6 @@ import com.example.TestEntityFactory;
 import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.exception.BlogException;
 import com.example.blog.common.exception.MemberException;
-import com.example.blog.domain.blog.dto.BlogResponseDto;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.entity.BlogVisibility;
@@ -61,7 +59,7 @@ public class BlogServiceImplTest {
         "slug",
         BlogVisibility.PUBLIC
     );
-    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper, tagService, blogTagRepository, blogStatService);
+    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper);
   }
 
   @Test
@@ -76,10 +74,10 @@ public class BlogServiceImplTest {
     given(memberPort.findById(randomId)).willReturn(Optional.of(member));
 
     Tag tag = new Tag(requestDto.tags().get(0));
-    given(tagService.getOrCreateTags(requestDto.tags())).willReturn(List.of(tag));
+//    given(tagService.getOrCreateTags(requestDto.tags())).willReturn(List.of(tag));
 
     Blog blogEntity = mock(Blog.class);
-    given(blogPort.save(any(Blog.class))).willAnswer(invocation -> invocation.getArgument(0));
+//    given(blogPort.save(any(Blog.class))).willAnswer(invocation -> invocation.getArgument(0));
 
     // when
     Blog result = blogService.createBlog(requestDto, principal);
