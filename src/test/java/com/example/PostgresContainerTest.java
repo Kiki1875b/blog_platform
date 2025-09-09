@@ -25,6 +25,6 @@ public class PostgresContainerTest {
     r.add("spring.datasource.username", POSTGRES::getUsername);
     r.add("spring.datasource.password", POSTGRES::getPassword);
     r.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
-    r.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    r.add("spring.jpa.hibernate.ddl-auto", () -> "create");
   }
 }
