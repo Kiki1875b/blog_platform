@@ -57,4 +57,10 @@ public class Blog extends BaseUpdatableEntity {
     }
     tags.forEach(tag -> this.blogTags.add(new BlogTag(this, tag)));
   }
+
+  public List<String> getTagNames() {
+    return blogTags.stream()
+        .map(bt -> bt.getTag().getName())
+        .toList();
+  }
 }

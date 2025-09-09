@@ -1,6 +1,5 @@
 package com.example.blog.domain.blog_stat.entity;
 
-import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.blog.entity.Blog;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,18 +12,16 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PreUpdate;
 import java.time.Instant;
 import java.util.UUID;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class BlogStat {
-
   @Id
   @Column(columnDefinition = "UUID")
   private UUID id;
@@ -53,5 +50,10 @@ public class BlogStat {
   @PreUpdate
   private void onUpdate(){
     this.updatedAt = Instant.now();
+  }
+
+  public void setBlog(Blog blog){
+    if(blog == null) return;
+    this.blog = blog;
   }
 }
