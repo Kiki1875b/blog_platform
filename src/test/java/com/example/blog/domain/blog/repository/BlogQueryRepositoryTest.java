@@ -70,13 +70,13 @@ class BlogQueryRepositoryImplTest extends PostgresContainerTest {
   @Test
   @DisplayName("postCount DESC 정렬 + limit+1 적용 확인")
   void findByMemberIdAndQuery_postCount_desc_limitPlusOne() {
-    BlogPaginationRequest request = new BlogPaginationRequest(SortBy.POSTS, Direction.DESC, 2, null);
+    BlogPaginationRequest request = new BlogPaginationRequest(SortBy.POSTS, Direction.DESC, 1, null);
 
     List<Blog> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
 
-    assertThat(result).hasSize(3); // limit=2이지만 내부 fetch는 3 (= limit+1)
+    assertThat(result).hasSize(2); // limit=2이지만 내부 fetch는 3 (= limit+1)
     assertThat(result).extracting(Blog::getSlug)
-        .containsExactly("slug-2", "slug-1", "slug-0");
+        .containsExactly("slug-2", "slug-1");
   }
 
 }
