@@ -1,6 +1,7 @@
 package com.example.blog.domain.blog.respository;
 
 import com.example.blog.domain.blog.dto.BlogPaginationRequest;
+import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.entity.Blog;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class BlogRepositoryAdapter implements BlogRepositoryPort{
   }
 
   @Override
-  public List<Blog> findByMemberIdAndQuery(UUID memberId, BlogPaginationRequest query) {
+  public List<BlogWithStat> findByMemberIdAndQuery(UUID memberId, BlogPaginationRequest query) {
     return blogRepository.findByMemberIdAndQuery(memberId, query);
   }
 }

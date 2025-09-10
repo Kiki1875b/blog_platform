@@ -9,9 +9,12 @@ import com.example.blog.common.pagenation.PaginatedResponse;
 import com.example.blog.common.pagenation.PaginationUtil;
 import com.example.blog.domain.blog.dto.BlogPaginationRequest;
 import com.example.blog.domain.blog.dto.BlogResponseDto;
+import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.respository.BlogRepositoryPort;
+import com.example.blog.domain.blog_tag.entity.BlogTag;
+import com.example.blog.domain.blog_tag.repository.BlogTagRepository;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import com.example.blog.domain.tag.entity.Tag;
@@ -31,6 +34,7 @@ public class BlogServiceImpl implements BlogService{
   private final MemberRepositoryPort memberPort;
   private final BlogRepositoryPort blogPort;
   private final BlogMapper blogMapper;
+  private final BlogTagRepository blogTagRepository; // TODO: port 로 분리
 
   @Override
   @Transactional
@@ -59,9 +63,18 @@ public class BlogServiceImpl implements BlogService{
   @Override
   @Transactional
   public PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId, BlogPaginationRequest request) {
-    List<Blog> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
-    PageInfo pageInfo = PaginationUtil.createPageInfo(blogs, request.limit());
-    List<BlogResponseDto> responseDtoList = blogMapper.toResponseList(blogs);
+    List<BlogWithStat> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
+    List<UUID> blogIds = extractBlogIds(blogs);
+    List<BlogTag> blogTags = blogTagRepository.findAllByBlogId(blogIds);
+
+
+    PageInfo pageInfo = PaginationUtil.createPageInfo(blogs, request.limit(), request.sortBy());
+
+    List<BlogResponseDto> responseDtoList = blogMapper.toResponseListWithStat(blogs);
     return new PaginatedResponse<>(responseDtoList, pageInfo);
+  }
+
+  private List<UUID> extractBlogIds(List<BlogWithStat> blogs) {
+    return blogs.stream().map(BlogWithStat::blog).map(Blog::getId).toList();
   }
 }

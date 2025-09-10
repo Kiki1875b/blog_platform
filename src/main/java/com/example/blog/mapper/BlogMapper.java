@@ -1,6 +1,7 @@
 package com.example.blog.mapper;
 
 import com.example.blog.domain.blog.dto.BlogResponseDto;
+import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.member.entity.Member;
@@ -30,6 +31,23 @@ public interface BlogMapper {
 
 
   List<BlogResponseDto> toResponseList(List<Blog> blogs);
+
+  @Mapping(target = "blogId", source = "blog.id")
+  @Mapping(target = "memberId", source = "blog.member.id")
+  @Mapping(target = "title", source = "blog.title")
+  @Mapping(target = "tags", expression = "java(blogWithStat.blog().getTagNames())")
+  @Mapping(target = "description", source = "blog.description")
+  @Mapping(target = "visibility", source = "blog.visibility")
+  @Mapping(target = "slug", source = "blog.slug")
+  @Mapping(target = "views", source = "stat.viewCount")
+  @Mapping(target = "posts", source = "stat.postCount")
+  @Mapping(target = "followers", source = "stat.followerCount")
+  @Mapping(target = "createdAt", source = "blog.createdAt")
+  @Mapping(target = "updatedAt", source = "blog.updatedAt")
+  BlogResponseDto toResponse(BlogWithStat blogWithStat);
+
+  List<BlogResponseDto> toResponseListWithStat(List<BlogWithStat> blogs);
+
 
 //  @AfterMapping
 //  default void mapTags(Blog blog, @MappingTarget BlogResponseDto.BlogResponseDtoBuilder responseBuilder) {

@@ -8,6 +8,7 @@ import com.example.TestEntityFactory;
 import com.example.blog.common.pagenation.Direction;
 import com.example.blog.common.pagenation.SortBy;
 import com.example.blog.domain.blog.dto.BlogPaginationRequest;
+import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.respository.BlogQueryRepositoryImpl;
 import com.example.blog.domain.member.entity.Member;
@@ -48,10 +49,10 @@ class BlogQueryRepositoryImplTest extends PostgresContainerTest {
   void findByMemberIdAndQuery_viewCount_desc() {
     BlogPaginationRequest request = new BlogPaginationRequest(SortBy.VIEWS, Direction.DESC, 10, null);
 
-    List<Blog> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
-
+    List<BlogWithStat> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
+    List<Blog> blogs = result.stream().map(BlogWithStat::blog).toList();
     assertThat(result).hasSize(3);
-    assertThat(result).extracting(Blog::getSlug)
+    assertThat(blogs).extracting(Blog::getSlug)
         .containsExactly("slug-2", "slug-1", "slug-0");
   }
 
@@ -60,10 +61,11 @@ class BlogQueryRepositoryImplTest extends PostgresContainerTest {
   void findByMemberIdAndQuery_followerCount_asc() {
     BlogPaginationRequest request = new BlogPaginationRequest(SortBy.FOLLOWERS, Direction.ASC, 10, null);
 
-    List<Blog> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
+    List<BlogWithStat> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
+    List<Blog> blogs = result.stream().map(BlogWithStat::blog).toList();
 
     assertThat(result).hasSize(3);
-    assertThat(result).extracting(Blog::getSlug)
+    assertThat(blogs).extracting(Blog::getSlug)
         .containsExactly("slug-0", "slug-1", "slug-2");
   }
 
@@ -72,10 +74,11 @@ class BlogQueryRepositoryImplTest extends PostgresContainerTest {
   void findByMemberIdAndQuery_postCount_desc_limitPlusOne() {
     BlogPaginationRequest request = new BlogPaginationRequest(SortBy.POSTS, Direction.DESC, 1, null);
 
-    List<Blog> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
+    List<BlogWithStat> result = blogQueryRepository.findByMemberIdAndQuery(member.getId(), request);
+    List<Blog> blogs = result.stream().map(BlogWithStat::blog).toList();
 
     assertThat(result).hasSize(2); // limit=2이지만 내부 fetch는 3 (= limit+1)
-    assertThat(result).extracting(Blog::getSlug)
+    assertThat(blogs).extracting(Blog::getSlug)
         .containsExactly("slug-2", "slug-1");
   }
 

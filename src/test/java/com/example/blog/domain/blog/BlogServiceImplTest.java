@@ -59,7 +59,7 @@ public class BlogServiceImplTest {
         "slug",
         BlogVisibility.PUBLIC
     );
-    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper);
+    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper, blogTagRepository);
   }
 
   @Test

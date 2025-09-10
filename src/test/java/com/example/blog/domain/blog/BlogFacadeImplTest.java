@@ -74,6 +74,9 @@ private UUID memberId;
         createBlogRequestDto.description(),
         createBlogRequestDto.visibility(),
         createBlogRequestDto.slug(),
+        0L,
+        0L,
+        0L,
         Instant.now(),
         Instant.now()
     );
@@ -110,7 +113,7 @@ private UUID memberId;
     BlogPaginationRequest req = new BlogPaginationRequest(
         SortBy.FOLLOWERS, Direction.DESC, 10, null
     );
-    PaginatedResponse<BlogResponseDto> expected = new PaginatedResponse<>(List.of(blogResponseDto), new PageInfo(1, 10, 0, blogResponseDto.blogId(), false));
+    PaginatedResponse<BlogResponseDto> expected = new PaginatedResponse<>(List.of(blogResponseDto), new PageInfo(1, 10, 0, blogResponseDto.blogId().toString(), false));
 
     given(memberService.findMemberById(memberId))
         .willReturn(mock(Member.class));

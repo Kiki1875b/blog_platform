@@ -15,6 +15,9 @@ public record BlogResponseDto(
    String description,
    BlogVisibility visibility,
    String slug,
+   long views,
+   long posts,
+   long followers,
    Instant createdAt,
    Instant updatedAt
 ) {
