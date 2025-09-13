@@ -9,6 +9,7 @@ import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.tag.entity.Tag;
 import jakarta.persistence.EntityManager;
+import java.util.HashSet;
 import java.util.UUID;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,6 +32,17 @@ public class TestEntityFactory {
     );
     em.persist(m);
     return m;
+  }
+
+  public static Tag createTag(String tagName){
+    Tag t = new Tag(tagName);
+    ReflectionTestUtils.setField(t, "id", UUID.randomUUID());
+    return t;
+  }
+  public static Blog createBlog(Member member){
+    Blog b = new Blog(member, "title", "description", BlogVisibility.PUBLIC, "slug", new HashSet<>());
+    ReflectionTestUtils.setField(b, "id", UUID.randomUUID());
+    return b;
   }
 
   public static Blog blog(EntityManager em, Member owner, String slug, String title, String desc) {

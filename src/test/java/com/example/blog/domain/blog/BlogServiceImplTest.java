@@ -11,6 +11,7 @@ import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.exception.BlogException;
 import com.example.blog.common.exception.MemberException;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
+import com.example.blog.domain.blog.dto.UpdateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.entity.BlogVisibility;
 import com.example.blog.domain.blog.respository.BlogRepositoryPort;
@@ -23,6 +24,7 @@ import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.domain.tag.service.TagService;
 import com.example.blog.mapper.BlogMapper;
 import com.example.blog.mapper.BlogMapperImpl;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -116,5 +118,26 @@ public class BlogServiceImplTest {
     assertThatThrownBy(() -> blogService.createBlog(requestDto, principal))
         .isInstanceOf(MemberException.class);
     verifyNoInteractions(tagService);
+  }
+
+  @Test
+  @DisplayName("블로그를 업데이트 할 수 있다")
+  void 블로그를_업데이트_할_수_있다(){
+    // given
+    Blog blog = TestEntityFactory.createBlog(member);
+    List<Tag> tags = List.of(TestEntityFactory.createTag("tag"));
+    given(blogPort.findById(blog.getId())).willReturn(blog);
+    UpdateBlogRequestDto updateBlogRequestDto = new UpdateBlogRequestDto(
+        "updated title", new ArrayList<>(), "updated", BlogVisibility.PRIVATE
+    );
+
+    // when
+
+    Blog updated = blogService.updateBlog(blog.getId(), updateBlogRequestDto, member, tags);
+
+    // then
+    assertThat(updated.getTitle()).isEqualTo(updateBlogRequestDto.title());
+    assertThat(updated.getBlogTags()).isNotEmpty();
+
   }
 }
