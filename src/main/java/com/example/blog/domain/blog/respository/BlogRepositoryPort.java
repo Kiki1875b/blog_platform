@@ -11,4 +11,5 @@ public interface BlogRepositoryPort {
   Optional<Blog> findBySlug(String slug);
   Blog save(Blog blog);
   List<BlogWithStat> findByMemberIdAndQuery(UUID memberId, BlogPaginationRequest query);
+  Blog findById(UUID blogId);
 }

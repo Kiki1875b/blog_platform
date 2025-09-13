@@ -53,5 +53,8 @@ public class BlogController {
   public ResponseEntity<BlogResponseDto> updateBlog(@PathVariable UUID blogId, @AuthenticationPrincipal CustomPrincipal principal, @RequestBody
       UpdateBlogRequestDto updateDto){
 
+    BlogResponseDto responseDto = blogFacade.updateBlog(blogId, updateDto, principal);
+
+    return ResponseEntity.ok(responseDto);
   }
 }

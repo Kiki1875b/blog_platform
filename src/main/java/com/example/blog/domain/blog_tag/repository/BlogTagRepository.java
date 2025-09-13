@@ -14,5 +14,9 @@ public interface BlogTagRepository extends JpaRepository<BlogTag, UUID> {
         JOIN FETCH bt.tag t
         WHERE bt.blog.id IN :blogIds
   """)
-  List<BlogTag> findAllByBlogId(List<UUID> blogIds);
+  List<BlogTag> findAllByBlogIds(List<UUID> blogIds);
+
+  List<BlogTag> findAllByBlogId(UUID blogId);
+
+  void deleteAllByBlogId(UUID blogId);
 }

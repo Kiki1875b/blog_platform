@@ -48,14 +48,39 @@ public class Blog extends BaseUpdatableEntity {
   @Column(unique = true, nullable = false)
   private String slug;
 
-  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
   Set<BlogTag> blogTags = new HashSet<>();
 
-  public void addTags(List<Tag> tags){
+  public void updateTitle(String title){
+    if(title == null || title.isEmpty()) return;
+    this.title = title;
+  }
+
+  public void updateDescription(String description){
+    if(description == null || description.isEmpty()) return;
+    this.description = description;
+  }
+
+  public void updateVisibility(BlogVisibility visibility){
+    if(visibility == null) return;
+    this.visibility = visibility;
+  }
+
+  public void updateTags(List<Tag> tags){
     if (this.blogTags == null) {
       this.blogTags = new HashSet<>();
     }
+
+    if(tags.isEmpty()) return;
     tags.forEach(tag -> this.blogTags.add(new BlogTag(this, tag)));
+  }
+
+  public void updateTags(Set<Tag> newTags) {
+    // 새로 들어온 테그 목록에 없는 기존 테그 삭제
+    blogTags.removeIf(bt -> !newTags.contains(bt.getTag()));
+
+    // 새로운 테그 삽입
+    newTags.forEach(tag -> this.blogTags.add(new BlogTag(this, tag)));
   }
 
   public List<String> getTagNames() {

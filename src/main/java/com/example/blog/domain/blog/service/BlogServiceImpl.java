@@ -11,6 +11,7 @@ import com.example.blog.domain.blog.dto.BlogPaginationRequest;
 import com.example.blog.domain.blog.dto.BlogResponseDto;
 import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
+import com.example.blog.domain.blog.dto.UpdateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.respository.BlogRepositoryPort;
 import com.example.blog.domain.blog_tag.entity.BlogTag;
@@ -19,7 +20,9 @@ import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.mapper.BlogMapper;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +54,24 @@ public class BlogServiceImpl implements BlogService{
   }
 
   @Override
+  public Blog updateBlog(UUID blogId, UpdateBlogRequestDto request, Member member, List<Tag> tags) {
+    Blog blog = blogPort.findById(blogId);
+
+    validateUserIsBlogOwner(blog, member);
+    blog.updateTitle(request.title());
+    blog.updateDescription(request.description());
+    blog.updateVisibility(request.visibility());
+
+    Set<Tag> incomingTags = new HashSet<>(tags);
+    blog.updateTags(incomingTags);
+
+    blogPort.save(blog);
+    return blog;
+  }
+
+  @Override
   public void addTags(List<Tag> tags, Blog blog){
-    blog.addTags(tags);
+    blog.updateTags(tags);
   }
 
   @Override
@@ -65,13 +84,17 @@ public class BlogServiceImpl implements BlogService{
   public PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId, BlogPaginationRequest request) {
     List<BlogWithStat> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
     List<UUID> blogIds = extractBlogIds(blogs);
-    List<BlogTag> blogTags = blogTagRepository.findAllByBlogId(blogIds);
-
-
+    List<BlogTag> blogTags = blogTagRepository.findAllByBlogIds(blogIds);
     PageInfo pageInfo = PaginationUtil.createPageForBlog(blogs, request.limit(), request.sortBy());
 
     List<BlogResponseDto> responseDtoList = blogMapper.toResponseListWithStat(blogs);
     return new PaginatedResponse<>(responseDtoList, pageInfo);
+  }
+
+  private void validateUserIsBlogOwner(Blog blog, Member member){
+    if(!blog.getMember().equals(member)){
+      throw new BlogException(ErrorCode.WRONG_BLOG_OWNER);
+    }
   }
 
   private List<UUID> extractBlogIds(List<BlogWithStat> blogs) {
