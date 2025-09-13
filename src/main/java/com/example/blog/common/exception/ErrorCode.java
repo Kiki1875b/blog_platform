@@ -21,9 +21,9 @@ public enum ErrorCode {
   REGISTER_EXCEPTION(HttpStatus.BAD_REQUEST, "회원가입에 실패했습니다."),
 
   // BLOG
-  DUPLICATE_SLUG_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 존재하는 slug 입니다."),
-  BLOG_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 id의 블로그를 찾을 수 없습니다."),
-  WRONG_BLOG_OWNER(HttpStatus.BAD_REQUEST, "블로그 생성자의 id 와 일치하지 않습니다.");
+  DUPLICATE_SLUG_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 slug 입니다."),
+  BLOG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 블로그를 찾을 수 없습니다."),
+  WRONG_BLOG_OWNER(HttpStatus.FORBIDDEN, "블로그 생성자의 id 와 일치하지 않습니다.");
 
   private final HttpStatus status;
   private final String message;
