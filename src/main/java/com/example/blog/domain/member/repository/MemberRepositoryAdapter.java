@@ -4,7 +4,6 @@ import com.example.blog.domain.member.entity.Member;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 
@@ -26,5 +25,10 @@ public class MemberRepositoryAdapter implements MemberRepositoryPort{
   @Override
   public Member save(Member member) {
     return memberRepository.save(member);
+  }
+
+  @Override
+  public Member findMemberProxy(UUID uuid) {
+    return memberRepository.getReferenceById(uuid);
   }
 }
