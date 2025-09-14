@@ -91,6 +91,11 @@ public class BlogServiceImpl implements BlogService{
     return new PaginatedResponse<>(responseDtoList, pageInfo);
   }
 
+  @Override
+  public Blog findById(UUID uuid) {
+    return blogPort.findById(uuid);
+  }
+
   private void validateUserIsBlogOwner(Blog blog, Member member){
     if(!blog.getMember().equals(member)){
       throw new BlogException(ErrorCode.WRONG_BLOG_OWNER);
