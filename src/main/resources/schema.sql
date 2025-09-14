@@ -85,6 +85,7 @@ CREATE TABLE posts (
                        member_id      UUID NOT NULL,             -- 작성자(멤버)
                        title        VARCHAR(200) NOT NULL,
                        content      TEXT NOT NULL,
+
                        state        VARCHAR(16) NOT NULL DEFAULT 'PUBLIC'
                            CHECK (state IN ('PUBLIC','PRIVATE')),
                        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -1,6 +1,5 @@
 package com.example.blog.domain.post.entity;
 
-import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.member.entity.Member;
@@ -33,6 +32,8 @@ public class Post extends BaseUpdatableEntity {
 
   @Column(nullable = false)
   private String content;
+
+  private String contentHtml;
 
   @Enumerated(EnumType.STRING)
   private PostState state;
