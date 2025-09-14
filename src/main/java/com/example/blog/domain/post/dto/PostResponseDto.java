@@ -7,8 +7,11 @@ import java.util.UUID;
 
 public record PostResponseDto(
     UUID postId,
+    UUID blogId,
+    UUID authorId,
     String title,
     String content,
+    String contentHtml,
     PostState status,
     List<String> tags,
     Instant createdAt
