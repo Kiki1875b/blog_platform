@@ -30,8 +30,9 @@ public class PostCommandServiceImpl implements PostCommandService{
     Post post = postMapper.toEntity(request);
     post.addAuthor(member);
     post.addBlog(blog);
-    post.updateTags(new HashSet<>(tags));
+    HashSet<Tag> tags1 = new HashSet<>(tags);
 
+    post.updateTags(tags1);
 
     post.updateHtml(mdService.toHtml(request.content()));
 
