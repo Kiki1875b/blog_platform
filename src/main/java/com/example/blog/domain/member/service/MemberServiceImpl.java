@@ -48,6 +48,11 @@ public class MemberServiceImpl implements MemberService {
     return foundMember;
   }
 
+  @Override
+  public Member findMemberById(UUID memberId) {
+    return memberPort.findById(memberId).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
+  }
+
   private void validatePassword(String currentPassword, String originalPassword){
     if(!encoder.matches(currentPassword, originalPassword)){
       throw new AuthException(ErrorCode.PASSWORD_MATCH_ERROR);

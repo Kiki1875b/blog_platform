@@ -2,7 +2,6 @@ package com.example.blog.domain.blog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -11,18 +10,21 @@ import com.example.TestEntityFactory;
 import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.exception.BlogException;
 import com.example.blog.common.exception.MemberException;
-import com.example.blog.domain.blog.dto.BlogResponseDto;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
+import com.example.blog.domain.blog.dto.UpdateBlogRequestDto;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.entity.BlogVisibility;
 import com.example.blog.domain.blog.respository.BlogRepositoryPort;
 import com.example.blog.domain.blog.service.BlogServiceImpl;
+import com.example.blog.domain.blog_stat.service.BlogStatService;
+import com.example.blog.domain.blog_tag.repository.BlogTagRepository;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.repository.MemberRepositoryPort;
 import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.domain.tag.service.TagService;
 import com.example.blog.mapper.BlogMapper;
 import com.example.blog.mapper.BlogMapperImpl;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +42,8 @@ public class BlogServiceImplTest {
   @Mock private BlogRepositoryPort blogPort;
   private BlogMapper blogMapper = new BlogMapperImpl();
   @Mock private TagService tagService;
+  @Mock private BlogTagRepository blogTagRepository;
+  @Mock   private BlogStatService blogStatService;
 
   private BlogServiceImpl blogService;
 
@@ -57,7 +61,7 @@ public class BlogServiceImplTest {
         "slug",
         BlogVisibility.PUBLIC
     );
-    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper, tagService);
+    blogService = new BlogServiceImpl(memberPort, blogPort, blogMapper, blogTagRepository);
   }
 
   @Test
@@ -72,19 +76,19 @@ public class BlogServiceImplTest {
     given(memberPort.findById(randomId)).willReturn(Optional.of(member));
 
     Tag tag = new Tag(requestDto.tags().get(0));
-    given(tagService.getOrCreateTags(requestDto.tags())).willReturn(List.of(tag));
+//    given(tagService.getOrCreateTags(requestDto.tags())).willReturn(List.of(tag));
 
     Blog blogEntity = mock(Blog.class);
-    given(blogPort.save(any(Blog.class))).willAnswer(invocation -> invocation.getArgument(0));
+//    given(blogPort.save(any(Blog.class))).willAnswer(invocation -> invocation.getArgument(0));
 
     // when
-    BlogResponseDto result = blogService.createBlog(requestDto, principal);
+    Blog result = blogService.createBlog(requestDto, principal);
 
     // then
     assertThat(result).isNotNull();
-    assertThat(result.title()).isEqualTo("title");
-    assertThat(result.slug()).isEqualTo("slug");
-    assertThat(result.tags()).containsExactly("tag1");
+    assertThat(result.getTitle()).isEqualTo("title");
+    assertThat(result.getSlug()).isEqualTo("slug");
+//    assertThat(result.tags()).containsExactly("tag1");
   }
 
   @Test
@@ -114,5 +118,26 @@ public class BlogServiceImplTest {
     assertThatThrownBy(() -> blogService.createBlog(requestDto, principal))
         .isInstanceOf(MemberException.class);
     verifyNoInteractions(tagService);
+  }
+
+  @Test
+  @DisplayName("블로그를 업데이트 할 수 있다")
+  void 블로그를_업데이트_할_수_있다(){
+    // given
+    Blog blog = TestEntityFactory.createBlog(member);
+    List<Tag> tags = List.of(TestEntityFactory.createTag("tag"));
+    given(blogPort.findById(blog.getId())).willReturn(blog);
+    UpdateBlogRequestDto updateBlogRequestDto = new UpdateBlogRequestDto(
+        "updated title", new ArrayList<>(), "updated", BlogVisibility.PRIVATE
+    );
+
+    // when
+
+    Blog updated = blogService.updateBlog(blog.getId(), updateBlogRequestDto, member, tags);
+
+    // then
+    assertThat(updated.getTitle()).isEqualTo(updateBlogRequestDto.title());
+    assertThat(updated.getBlogTags()).isNotEmpty();
+
   }
 }
