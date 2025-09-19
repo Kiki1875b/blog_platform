@@ -7,6 +7,8 @@ import com.example.blog.domain.blog_stat.entity.BlogStat;
 import com.example.blog.domain.blog_tag.entity.BlogTag;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
+import com.example.blog.domain.post.entity.Post;
+import com.example.blog.domain.post.entity.PostState;
 import com.example.blog.domain.tag.entity.Tag;
 import jakarta.persistence.EntityManager;
 import java.util.HashSet;
@@ -34,6 +36,14 @@ public class TestEntityFactory {
     return m;
   }
 
+  public static Post createPost(Member member, Blog blog){
+    Post p = new Post(
+        blog, member, "title", "content", null, PostState.PUBLIC, new HashSet<>()
+    );
+    ReflectionTestUtils.setField(p, "id", UUID.randomUUID());
+
+    return p;
+  }
   public static Tag createTag(String tagName){
     Tag t = new Tag(tagName);
     ReflectionTestUtils.setField(t, "id", UUID.randomUUID());

@@ -10,4 +10,6 @@ public interface MemberService {
   Member findMember(CustomPrincipal principal);
   Member updateMember(UpdateMemberRequestDto request, CustomPrincipal principal);
   Member findMemberById(UUID memberId);
+
+  Member findMemberProxy(CustomPrincipal principal);
 }

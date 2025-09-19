@@ -53,6 +53,11 @@ public class MemberServiceImpl implements MemberService {
     return memberPort.findById(memberId).orElseThrow(() -> new MemberException(ErrorCode.USER_NOT_FOUND));
   }
 
+  @Override
+  public Member findMemberProxy(CustomPrincipal principal) {
+    return memberPort.findMemberProxy(principal.id());
+  }
+
   private void validatePassword(String currentPassword, String originalPassword){
     if(!encoder.matches(currentPassword, originalPassword)){
       throw new AuthException(ErrorCode.PASSWORD_MATCH_ERROR);

@@ -85,6 +85,7 @@ CREATE TABLE posts (
                        member_id      UUID NOT NULL,             -- 작성자(멤버)
                        title        VARCHAR(200) NOT NULL,
                        content      TEXT NOT NULL,
+
                        state        VARCHAR(16) NOT NULL DEFAULT 'PUBLIC'
                            CHECK (state IN ('PUBLIC','PRIVATE')),
                        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -154,4 +155,17 @@ CREATE TABLE post_attachments (
 
                                   CONSTRAINT fk_post_attachments_post   FOREIGN KEY (post_id) REFERENCES posts(id)   ON DELETE CASCADE,
                                   CONSTRAINT fk_post_attachments_member FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+);
+
+CREATE TABLE post_stats (
+                            id UUID PRIMARY KEY,
+
+                            view_count BIGINT NOT NULL DEFAULT 0,
+                            like_count BIGINT NOT NULL DEFAULT 0,
+
+                            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                            updated_at TIMESTAMPTZ,
+
+                            CONSTRAINT fk_post_stats_post FOREIGN KEY (id)
+                                REFERENCES posts (id) ON DELETE CASCADE
 );

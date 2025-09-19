@@ -19,4 +19,6 @@ public interface BlogService {
   void addTags(List<Tag> tags, Blog blog);
   Blog saveBlog(Blog blog);
   PaginatedResponse<BlogResponseDto> getMemberBlogs(UUID memberId, BlogPaginationRequest request);
+
+  Blog findById(UUID uuid);
 }
