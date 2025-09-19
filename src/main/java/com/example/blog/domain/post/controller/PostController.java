@@ -8,6 +8,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +24,16 @@ public class PostController {
 
   @PostMapping("/blogs/{blogId}/posts")
   public ResponseEntity<PostResponseDto> createBlogPost(@AuthenticationPrincipal CustomPrincipal principal, @RequestBody
-      CreatePostRequestDto request, @PathVariable UUID blogId){
+  CreatePostRequestDto request, @PathVariable UUID blogId){
 
     return ResponseEntity.ok(postFacade.createPost(principal, request, blogId));
   }
+
+  @GetMapping("/posts/{postId}")
+  public ResponseEntity<PostResponseDto> getPost(@PathVariable UUID postId){
+    return ResponseEntity.ok(postFacade.getSinglePostById(postId));
+  }
+
+
 
 }

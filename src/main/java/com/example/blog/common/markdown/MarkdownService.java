@@ -3,6 +3,8 @@ package com.example.blog.common.markdown;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +19,8 @@ public class MarkdownService {
       return "";
     }
 
-    return renderer.render(parser.parse(markdown));
+    String html = renderer.render(parser.parse(markdown));
+
+    return Jsoup.clean(html, Safelist.basicWithImages());
   }
 }

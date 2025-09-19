@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface PostFacade {
   PostResponseDto createPost(CustomPrincipal principal, CreatePostRequestDto request, UUID blogId);
+  PostResponseDto getSinglePostById(UUID blogId);
 }

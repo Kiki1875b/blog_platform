@@ -10,6 +10,7 @@ import com.example.blog.domain.post.dto.PostResponseDto;
 import com.example.blog.domain.post.entity.Post;
 import com.example.blog.domain.post.mapper.PostMapper;
 import com.example.blog.domain.post.service.PostCommandService;
+import com.example.blog.domain.post.service.PostQueryService;
 import com.example.blog.domain.post_stat.service.PostStatService;
 import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.domain.tag.service.TagService;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostFacadeImpl implements PostFacade {
 
+  private final PostQueryService postQueryService;
   private final PostCommandService postCommandService;
   private final BlogService blogService;
   private final MemberService memberService;
@@ -41,6 +43,12 @@ public class PostFacadeImpl implements PostFacade {
 
     postStatService.createPostStat(post); // TODO : 이벤트 분리
 
+    return postMapper.toResponse(post);
+  }
+
+  @Override
+  public PostResponseDto getSinglePostById(UUID postId) {
+    Post post = postQueryService.getPostByIdWithTag(postId);
     return postMapper.toResponse(post);
   }
 }

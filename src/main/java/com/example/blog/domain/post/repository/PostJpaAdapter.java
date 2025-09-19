@@ -19,6 +19,12 @@ public class PostJpaAdapter implements PostRepositoryPort{
   }
 
   @Override
+  public Post findByIdJoinTag(UUID id) {
+    return postRepository.findByIdWithTags(id).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+  }
+
+
+  @Override
   public Post save(Post post) {
     return postRepository.save(post);
   }

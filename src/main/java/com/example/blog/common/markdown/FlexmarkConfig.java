@@ -15,6 +15,6 @@ public class FlexmarkConfig {
 
   @Bean
   public HtmlRenderer renderer(){
-    return HtmlRenderer.builder().build();
+    return HtmlRenderer.builder().escapeHtml(true).build();
   }
 }

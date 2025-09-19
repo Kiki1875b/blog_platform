@@ -47,7 +47,7 @@ public class Post extends BaseUpdatableEntity {
   @Enumerated(EnumType.STRING)
   private PostState state;
 
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   Set<PostTag> postTags = new HashSet<>();
 
 

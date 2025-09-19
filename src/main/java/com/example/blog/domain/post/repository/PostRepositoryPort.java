@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface PostRepositoryPort {
   Post findById(UUID uuid);
+  Post findByIdJoinTag(UUID id);
   Post save(Post post);
 }
