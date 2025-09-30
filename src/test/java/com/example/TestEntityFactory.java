@@ -9,8 +9,11 @@ import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.entity.MemberRole;
 import com.example.blog.domain.post.entity.Post;
 import com.example.blog.domain.post.entity.PostState;
+import com.example.blog.domain.post_stat.entity.PostStat;
 import com.example.blog.domain.tag.entity.Tag;
 import jakarta.persistence.EntityManager;
+
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.UUID;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,7 +31,10 @@ public class TestEntityFactory {
         "test" + emailSuffix + "@test.com",
         "pwd",
         "nickname",
-        null, null, null, null,
+        null, 
+        null, 
+        MemberStatus.ACTIVE, 
+        null,
         "tester",
         MemberRole.USER
     );
@@ -56,7 +62,7 @@ public class TestEntityFactory {
   }
 
   public static Blog blog(EntityManager em, Member owner, String slug, String title, String desc) {
-    Blog b = new Blog(owner, title, desc, BlogVisibility.PUBLIC, slug, null);
+    Blog b = new Blog(owner, title, desc, BlogVisibility.PUBLIC, slug, new HashSet<>());
     em.persist(b);
     return b;
   }
@@ -100,6 +106,21 @@ public class TestEntityFactory {
     link(em, blog, tag);
 
     return blog;
+  }
+
+  public static Post seedPostBundle(EntityManager em, Member owner, Blog blog, String title, long views, long likes, Instant createdAt) {
+    Post post = new Post(blog, owner, title, "content", "contentHtml", PostState.PUBLIC, new HashSet<>());
+    ReflectionTestUtils.setField(post, "createdAt", createdAt);
+    em.persist(post);
+
+    PostStat stat = new PostStat();
+    ReflectionTestUtils.setField(stat, "post", post);
+    ReflectionTestUtils.setField(stat, "id", post.getId());
+    ReflectionTestUtils.setField(stat, "viewCount", views);
+    ReflectionTestUtils.setField(stat, "likeCount", likes);
+    em.persist(stat);
+
+    return post;
   }
 
 
