@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface PostRepository extends JpaRepository<Post, UUID> {
+public interface PostRepository extends JpaRepository<Post, UUID>, PostQueryRepository {
 
 
   @Query("""
@@ -17,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     WHERE p.id = :id
   """)
   Optional<Post> findByIdWithTags(UUID id);
+
+
 }

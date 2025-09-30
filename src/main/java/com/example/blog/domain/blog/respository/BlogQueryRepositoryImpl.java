@@ -35,7 +35,7 @@ public class BlogQueryRepositoryImpl implements BlogQueryRepository{
     where.and(blog.member.id.eq(memberId));
 
     // === 정렬 기준 필드 선택 ===
-    var sortField = switch (request.sortBy()) {
+    var sortField = switch (request.blogSortBy()) {
       case VIEWS -> blogStat.viewCount;
       case POSTS -> blogStat.postCount;
       case FOLLOWERS -> blogStat.followerCount;

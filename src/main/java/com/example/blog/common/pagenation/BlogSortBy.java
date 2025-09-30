@@ -2,11 +2,11 @@ package com.example.blog.common.pagenation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public enum SortBy {
+public enum BlogSortBy {
   FOLLOWERS, POSTS, VIEWS;
 
   @JsonCreator
-  public static SortBy from(String value) {
-    return SortBy.valueOf(value.toUpperCase());
+  public static BlogSortBy from(String value) {
+    return BlogSortBy.valueOf(value.toUpperCase());
   }
 }

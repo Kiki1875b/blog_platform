@@ -71,7 +71,7 @@ public class PostFacadeImplTest {
 
     post = TestEntityFactory.createPost(member, blog);
     responseDto = new PostResponseDto(
-        post.getId(), blog.getId(), member.getId(), post.getTitle(), post.getContent(), post.getContentHtml(), post.getState(), post.getTagNames(), Instant.now()
+        post.getId(), blog.getId(), member.getId(), post.getTitle(), post.getContent(), post.getContentHtml(), post.getState(), post.getTagNames(), Instant.now(), 0L, 0L
     );
   }
 

@@ -85,7 +85,7 @@ public class BlogServiceImpl implements BlogService{
     List<BlogWithStat> blogs = blogPort.findByMemberIdAndQuery(memberId, request);
     List<UUID> blogIds = extractBlogIds(blogs);
     List<BlogTag> blogTags = blogTagRepository.findAllByBlogIds(blogIds);
-    PageInfo pageInfo = PaginationUtil.createPageForBlog(blogs, request.limit(), request.sortBy());
+    PageInfo pageInfo = PaginationUtil.createPageForBlog(blogs, request.limit(), request.blogSortBy());
 
     List<BlogResponseDto> responseDtoList = blogMapper.toResponseListWithStat(blogs);
     return new PaginatedResponse<>(responseDtoList, pageInfo);

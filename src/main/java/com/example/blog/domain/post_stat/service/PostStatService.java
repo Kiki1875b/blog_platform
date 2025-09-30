@@ -20,4 +20,11 @@ public class PostStatService {
     postStatRepository.save(stat);
     return stat;
   }
+
+  @Transactional
+  public PostStat getPostStatById(Post post) {
+    return postStatRepository.findByPostId(post.getId())
+        .orElseGet(() -> createPostStat(post));
+  }
+
 }

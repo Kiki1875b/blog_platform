@@ -1,7 +1,9 @@
 package com.example.blog.domain.post.controller;
 
 import com.example.blog.auth.user_details.CustomPrincipal;
+import com.example.blog.common.pagenation.BlogPostPaginatedResponse;
 import com.example.blog.domain.post.dto.CreatePostRequestDto;
+import com.example.blog.domain.post.dto.PostPaginationRequest;
 import com.example.blog.domain.post.dto.PostResponseDto;
 import com.example.blog.domain.post.facade.PostFacade;
 import java.util.UUID;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +37,14 @@ public class PostController {
     return ResponseEntity.ok(postFacade.getSinglePostById(postId));
   }
 
+  @GetMapping("/blogs/{blogId}/posts")
+  public ResponseEntity<BlogPostPaginatedResponse> getBlogPosts(
+      @PathVariable UUID blogId,
+      @ModelAttribute PostPaginationRequest request
+  ){
+    BlogPostPaginatedResponse res = postFacade.getBlogPosts(blogId, request);
+    return ResponseEntity.ok(res);
+  }
 
 
 }

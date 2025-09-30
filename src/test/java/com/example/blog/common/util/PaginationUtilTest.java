@@ -6,7 +6,7 @@ import com.example.TestEntityFactory;
 import com.example.blog.common.pagenation.PageInfo;
 import com.example.blog.common.pagenation.PaginationUtil;
 import com.example.blog.common.pagenation.PaginationUtil.Decoded;
-import com.example.blog.common.pagenation.SortBy;
+import com.example.blog.common.pagenation.BlogSortBy;
 import com.example.blog.domain.blog.dto.BlogWithStat;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.entity.BlogVisibility;
@@ -44,7 +44,7 @@ public class PaginationUtilTest {
   void 빈_리스트도_파싱할_수_있다(){
     // given
     List<BlogWithStat> list = new ArrayList<>();
-    PageInfo info = PaginationUtil.createPageForBlog(list, 10, SortBy.VIEWS);
+    PageInfo info = PaginationUtil.createPageForBlog(list, 10, BlogSortBy.VIEWS);
 
     // then
     assertThat(info.hasNext()).isFalse();
@@ -59,7 +59,7 @@ public class PaginationUtilTest {
     list.add(makeBlogWithStat(5L));
     list.add(makeBlogWithStat(10L));
 
-    PageInfo pageInfo = PaginationUtil.createPageForBlog(list, 1, SortBy.VIEWS);
+    PageInfo pageInfo = PaginationUtil.createPageForBlog(list, 1, BlogSortBy.VIEWS);
 
     assertThat(pageInfo.hasNext()).isTrue();
     assertThat(pageInfo.count()).isEqualTo(1);
@@ -76,7 +76,7 @@ public class PaginationUtilTest {
     list.add(b1);
     list.add(b2);
 
-    PageInfo pageInfo = PaginationUtil.createPageForBlog(list, 2, SortBy.VIEWS);
+    PageInfo pageInfo = PaginationUtil.createPageForBlog(list, 2, BlogSortBy.VIEWS);
 
     assertThat(pageInfo.hasNext()).isFalse();
     assertThat(pageInfo.nextCursor()).isEqualTo(b2.stat().getViewCount() + ":" + b2.blog().getId());

@@ -9,7 +9,7 @@ import com.example.blog.auth.user_details.CustomPrincipal;
 import com.example.blog.common.pagenation.Direction;
 import com.example.blog.common.pagenation.PageInfo;
 import com.example.blog.common.pagenation.PaginatedResponse;
-import com.example.blog.common.pagenation.SortBy;
+import com.example.blog.common.pagenation.BlogSortBy;
 import com.example.blog.domain.blog.dto.BlogPaginationRequest;
 import com.example.blog.domain.blog.dto.BlogResponseDto;
 import com.example.blog.domain.blog.dto.CreateBlogRequestDto;
@@ -111,7 +111,7 @@ private UUID memberId;
   @DisplayName("멤버 검증 후 블로그 목록 조회 성공")
   void 멤버_검증_수_블로그_목록_조회_성공(){
     BlogPaginationRequest req = new BlogPaginationRequest(
-        SortBy.FOLLOWERS, Direction.DESC, 10, null
+        BlogSortBy.FOLLOWERS, Direction.DESC, 10, null
     );
     PaginatedResponse<BlogResponseDto> expected = new PaginatedResponse<>(List.of(blogResponseDto), new PageInfo(1, 10, 0, blogResponseDto.blogId().toString(), false));
 
