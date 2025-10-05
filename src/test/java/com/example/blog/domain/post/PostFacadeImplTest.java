@@ -20,6 +20,7 @@ import com.example.blog.domain.post.facade.PostFacadeImpl;
 import com.example.blog.domain.post.mapper.PostMapper;
 import com.example.blog.domain.post.mapper.PostMapperImpl;
 import com.example.blog.domain.post.service.PostCommandService;
+import com.example.blog.domain.post.service.PostQueryService;
 import com.example.blog.domain.post_stat.service.PostStatService;
 import com.example.blog.domain.tag.entity.Tag;
 import com.example.blog.domain.tag.service.TagService;
@@ -36,6 +37,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class PostFacadeImplTest {
+
+  @Mock
+  private PostQueryService postQueryService;
 
   @Mock
   private PostCommandService postCommandService;
@@ -57,7 +61,7 @@ public class PostFacadeImplTest {
 
   @BeforeEach
   void setUp(){
-    postFacade = new PostFacadeImpl(postCommandService, blogService, memberService, tagService, postStatService, postMapper);
+    postFacade = new PostFacadeImpl(postQueryService, postCommandService, blogService, memberService, tagService, postStatService, postMapper);
     principal = mock(CustomPrincipal.class);
     member = TestEntityFactory.createMember();
     blog = TestEntityFactory.createBlog(member);
@@ -67,7 +71,7 @@ public class PostFacadeImplTest {
 
     post = TestEntityFactory.createPost(member, blog);
     responseDto = new PostResponseDto(
-        post.getId(), blog.getId(), member.getId(), post.getTitle(), post.getContent(), post.getContentHtml(), post.getState(), post.getTagNames(), Instant.now()
+        post.getId(), blog.getId(), member.getId(), post.getTitle(), post.getContent(), post.getContentHtml(), post.getState(), post.getTagNames(), Instant.now(), 0L, 0L
     );
   }
 

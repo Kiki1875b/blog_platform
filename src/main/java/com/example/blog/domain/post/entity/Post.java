@@ -47,7 +47,7 @@ public class Post extends BaseUpdatableEntity {
   @Enumerated(EnumType.STRING)
   private PostState state;
 
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   Set<PostTag> postTags = new HashSet<>();
 
 
@@ -85,5 +85,20 @@ public class Post extends BaseUpdatableEntity {
     return postTags.stream()
         .map(pt -> pt.getTag().getName())
         .toList();
+  }
+
+  public void update(String title, String content, PostState state, String contentHtml) {
+    if (title != null) {
+        this.title = title;
+    }
+    if (content != null) {
+        this.content = content;
+    }
+    if (state != null) {
+        this.state = state;
+    }
+    if (contentHtml != null) {
+        this.contentHtml = contentHtml;
+    }
   }
 }

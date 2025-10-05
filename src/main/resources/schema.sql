@@ -1,3 +1,18 @@
+DROP TABLE IF EXISTS post_attachments CASCADE;
+DROP TABLE IF EXISTS comment_likes CASCADE;
+DROP TABLE IF EXISTS post_likes CASCADE;
+DROP TABLE IF EXISTS post_stats CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS post_tags CASCADE;
+DROP TABLE IF EXISTS posts CASCADE;
+DROP TABLE IF EXISTS blog_tags CASCADE;
+DROP TABLE IF EXISTS blog_stat CASCADE;
+DROP TABLE IF EXISTS member_blog_follow CASCADE;
+DROP TABLE IF EXISTS blogs CASCADE;
+DROP TABLE IF EXISTS tags CASCADE;
+DROP TABLE IF EXISTS refresh_token CASCADE;
+DROP TABLE IF EXISTS members CASCADE;
+
 CREATE TABLE members (
                          id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                          email        VARCHAR(100) NOT NULL UNIQUE,
@@ -85,7 +100,7 @@ CREATE TABLE posts (
                        member_id      UUID NOT NULL,             -- 작성자(멤버)
                        title        VARCHAR(200) NOT NULL,
                        content      TEXT NOT NULL,
-
+                       content_html TEXT,
                        state        VARCHAR(16) NOT NULL DEFAULT 'PUBLIC'
                            CHECK (state IN ('PUBLIC','PRIVATE')),
                        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),

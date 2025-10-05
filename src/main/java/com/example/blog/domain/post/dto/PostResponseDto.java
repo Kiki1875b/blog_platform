@@ -14,7 +14,10 @@ public record PostResponseDto(
     String contentHtml,
     PostState status,
     List<String> tags,
-    Instant createdAt
+    Instant createdAt,
+    long views,
+    long likes
+
 ) {
 
 }

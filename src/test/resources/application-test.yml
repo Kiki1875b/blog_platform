@@ -8,6 +8,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    hikari:
+      maxLifetime: 3000000     # 30초마다 커넥션 강제로 교체
+      idleTimeout: 1000000     # 오래된 idle 연결 빨리 제거
+      minimumIdle: 0
+      maximumPoolSize: 20
+      validationTimeout: 5000
+      connectionTimeout: 20000
 
   security:
     oauth2:
@@ -50,3 +58,7 @@ cloud:
     presigned-url-expiration: 600
     expected-prefix: uploads/profile/
 
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false

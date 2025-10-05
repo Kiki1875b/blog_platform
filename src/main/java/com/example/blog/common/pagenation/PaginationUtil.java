@@ -1,13 +1,14 @@
 package com.example.blog.common.pagenation;
 
 import com.example.blog.domain.blog.dto.BlogWithStat;
+import com.example.blog.domain.post.dto.PostWithStat;
 import java.util.List;
 import java.util.UUID;
 
 public class PaginationUtil {
   private PaginationUtil() {}
 
-  public static PageInfo createPageForBlog(List<BlogWithStat> entities, long limit, SortBy sortBy) {
+  public static PageInfo createPageForBlog(List<BlogWithStat> entities, long limit, BlogSortBy blogSortBy) {
     boolean hasNext = hasNext(entities.size(), (int) limit);
     if (hasNext) {
       entities.remove(entities.size() - 1);
@@ -18,7 +19,7 @@ public class PaginationUtil {
 
     BlogWithStat last = entities.get(entities.size() - 1);
     UUID lastId = last.blog().getId();
-    long sortValue = switch (sortBy) {
+    long sortValue = switch (blogSortBy) {
       case VIEWS -> last.stat().getViewCount();
       case POSTS -> last.stat().getPostCount();
       case FOLLOWERS -> last.stat().getFollowerCount();
@@ -28,6 +29,26 @@ public class PaginationUtil {
     return new PageInfo(entities.size(), limit, 0, nextCursor, hasNext);
   }
 
+  public static PageInfo createPageForPost(List<PostWithStat> entities, long limit, PostSortBy postSortBy){
+    boolean hasNext = hasNext(entities.size(), (int) limit);
+    if(hasNext){
+      entities.remove(entities.size() - 1);
+    }
+    if (entities.isEmpty()) {
+      return new PageInfo(0, limit, 0, null, false);
+    }
+
+    PostWithStat last = entities.get(entities.size() - 1);
+    UUID lastId = last.post().getId();
+    long sortValue = switch (postSortBy) {
+      case DATE -> last.post().getCreatedAt().toEpochMilli();
+      case LIKES -> last.stat().getLikeCount();
+      case VIEWS -> last.stat().getViewCount();
+    };
+
+    String nextCursor = encode(sortValue, lastId);
+    return new PageInfo(entities.size(), limit, 0, nextCursor, hasNext);
+  }
   private static boolean hasNext(int size, int limit) {
     return limit < size;
   }

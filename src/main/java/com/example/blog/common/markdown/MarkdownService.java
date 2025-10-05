@@ -17,6 +17,8 @@ public class MarkdownService {
       return "";
     }
 
-    return renderer.render(parser.parse(markdown));
+    String html = renderer.render(parser.parse(markdown));
+
+    return html;
   }
 }

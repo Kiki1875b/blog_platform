@@ -1,16 +1,16 @@
 package com.example.blog.domain.blog.dto;
 
 import com.example.blog.common.pagenation.Direction;
-import com.example.blog.common.pagenation.SortBy;
+import com.example.blog.common.pagenation.BlogSortBy;
 
 public record BlogPaginationRequest(
-    SortBy sortBy,
+    BlogSortBy blogSortBy,
     Direction direction,
     long limit,
     String cursor
 ) {
   public BlogPaginationRequest{
-    if(sortBy == null) sortBy = SortBy.FOLLOWERS;
+    if(blogSortBy == null) blogSortBy = BlogSortBy.FOLLOWERS;
     if(direction == null) direction = Direction.DESC;
     if(limit <= 0) limit = 10;
   }
