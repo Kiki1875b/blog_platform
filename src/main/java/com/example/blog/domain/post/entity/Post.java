@@ -86,4 +86,19 @@ public class Post extends BaseUpdatableEntity {
         .map(pt -> pt.getTag().getName())
         .toList();
   }
+
+  public void update(String title, String content, PostState state, String contentHtml) {
+    if (title != null) {
+        this.title = title;
+    }
+    if (content != null) {
+        this.content = content;
+    }
+    if (state != null) {
+        this.state = state;
+    }
+    if (contentHtml != null) {
+        this.contentHtml = contentHtml;
+    }
+  }
 }

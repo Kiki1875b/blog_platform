@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.blog.domain.post.dto.UpdatePostRequestDto;
+import org.springframework.web.bind.annotation.PatchMapping;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -44,6 +47,15 @@ public class PostController {
   ){
     BlogPostPaginatedResponse res = postFacade.getBlogPosts(blogId, request);
     return ResponseEntity.ok(res);
+  }
+
+  @PatchMapping("/posts/{postId}")
+  public ResponseEntity<PostResponseDto> patchPost(
+      @AuthenticationPrincipal CustomPrincipal principal,
+      @PathVariable UUID postId,
+      @RequestBody UpdatePostRequestDto request
+  ) {
+    return ResponseEntity.ok(postFacade.updatePost(principal, postId, request));
   }
 
 

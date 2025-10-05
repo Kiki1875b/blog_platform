@@ -7,9 +7,13 @@ import com.example.blog.domain.post.dto.PostPaginationRequest;
 import com.example.blog.domain.post.dto.PostResponseDto;
 import java.util.UUID;
 
+import com.example.blog.domain.post.dto.UpdatePostRequestDto;
+
 public interface PostFacade {
   PostResponseDto createPost(CustomPrincipal principal, CreatePostRequestDto request, UUID blogId);
   PostResponseDto getSinglePostById(UUID blogId);
 
   BlogPostPaginatedResponse getBlogPosts(UUID blogId, PostPaginationRequest request);
+
+    PostResponseDto updatePost(CustomPrincipal principal, UUID postId, UpdatePostRequestDto request);
 }

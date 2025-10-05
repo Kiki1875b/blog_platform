@@ -21,6 +21,7 @@ import com.example.blog.domain.tag.service.TagService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import com.example.blog.domain.post.dto.UpdatePostRequestDto;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,5 +64,20 @@ public class PostFacadeImpl implements PostFacade {
     Blog blog = blogService.findById(blogId);
     PaginatedResponse<PostResponseDto> response = postQueryService.getBlogPosts(blog, request);
     return new BlogPostPaginatedResponse(blogId, blog.getTitle(), blog.getDescription(), blog.getTagNames(), response); // TODO: Mapper 로 이전하기
+  }
+
+  @Override
+  @Transactional
+  public PostResponseDto updatePost(CustomPrincipal principal, UUID postId, UpdatePostRequestDto request) {
+    Member author = memberService.findMemberProxy(principal);
+    List<Tag> tags = null;
+
+    if (request.getTags() != null) {
+        tags = tagService.getOrCreateTags(request.getTags());
+    }
+
+    postCommandService.updatePost(postId, author, tags, request);
+    Post post = postQueryService.getPostByIdWithTag(postId);
+    return postMapper.toResponse(post);
   }
 }
