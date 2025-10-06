@@ -25,15 +25,16 @@ public class GlobalExceptionHandler {
     }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String, String>> handleValidationExceptions(
+  public ResponseEntity<ErrorResponse> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
 
-    Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult().getFieldErrors().forEach(error ->
-        errors.put(error.getField(), error.getDefaultMessage())
-    );
+    String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .reduce("", (acc, error) -> acc + error + "\n");
 
-    return ResponseEntity.badRequest().body(errors);
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
+
+    return ResponseEntity.badRequest().body(errorResponse);
   }
 
   // 존재하지 않는 엔드포인트 요청 시
