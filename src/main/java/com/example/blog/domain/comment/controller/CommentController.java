@@ -6,6 +6,7 @@ import com.example.blog.domain.comment.dto.CreateCommentRequestDto;
 import com.example.blog.domain.comment.entity.Comment;
 import com.example.blog.domain.comment.mapper.CommentMapper;
 import com.example.blog.domain.comment.service.CommentService;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> createComment(
         @AuthenticationPrincipal CustomPrincipal principal,
         @PathVariable UUID postId,
-        @RequestBody CreateCommentRequestDto request
+        @RequestBody @Valid CreateCommentRequestDto request
     ) {
         Comment comment = commentService.createComment(principal, postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(commentMapper.toResponse(comment));

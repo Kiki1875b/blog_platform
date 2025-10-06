@@ -14,6 +14,9 @@ public interface CommentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "isDeleted", constant = "false")
     @Mapping(target = "content", source = "dto.content")
+    @Mapping(target = "post", source = "post")
+    @Mapping(target = "member", source = "member")
+    @Mapping(target = "parent", source = "parent")
     Comment toEntity(CreateCommentRequestDto dto, Post post, Member member, Comment parent);
 
     @Mapping(target = "commentId", source = "comment.id")

@@ -1,6 +1,6 @@
 package com.example.blog.domain.comment.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public record CommentResponseDto(
@@ -8,6 +8,6 @@ public record CommentResponseDto(
     String content,
     UUID authorId,
     String authorNickname,
-    LocalDateTime createdAt,
+    Instant createdAt,
     UUID parentCommentId
 ) {}

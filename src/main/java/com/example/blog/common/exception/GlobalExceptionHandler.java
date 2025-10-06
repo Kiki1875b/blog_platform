@@ -1,9 +1,12 @@
 package com.example.blog.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -12,6 +15,26 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        log.error("DomainException: {}", ex.getMessage());
+        return ResponseEntity.status(errorCode.getStatus()).body(new ErrorResponse(errorCode.getStatus().value(),
+            errorCode.getMessage()));
+    }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, String>> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
+
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult().getFieldErrors().forEach(error ->
+        errors.put(error.getField(), error.getDefaultMessage())
+    );
+
+    return ResponseEntity.badRequest().body(errors);
+  }
 
   // 존재하지 않는 엔드포인트 요청 시
   @ExceptionHandler(NoHandlerFoundException.class)
