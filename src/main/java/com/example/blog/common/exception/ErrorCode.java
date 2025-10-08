@@ -26,7 +26,10 @@ public enum ErrorCode {
   WRONG_BLOG_OWNER(HttpStatus.FORBIDDEN, "블로그 생성자의 id 와 일치하지 않습니다."),
 
   //POST
-  POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트를 찾을 수 없습니다.")
+  POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트를 찾을 수 없습니다."),
+
+  // COMMENT
+  PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다.")
 
 
 

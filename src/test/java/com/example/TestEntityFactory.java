@@ -11,6 +11,7 @@ import com.example.blog.domain.post.entity.Post;
 import com.example.blog.domain.post.entity.PostState;
 import com.example.blog.domain.post_stat.entity.PostStat;
 import com.example.blog.domain.tag.entity.Tag;
+import com.example.blog.domain.comment.entity.Comment;
 import jakarta.persistence.EntityManager;
 
 import java.time.Instant;

@@ -34,7 +34,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
 
     NumberTemplate<Long> createdAtEpoch = numberTemplate(Long.class,
-        "extract(epoch from {0}) * 1000", post.createdAt);
+        "extract(epoch from {0}) * 1000 AS bigint", post.createdAt);
 
     var sortField = switch (request.postSortBy()) {
       case VIEWS -> postStat.viewCount;
@@ -59,8 +59,14 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
       where.and(cursorCondition);
     }
 
-    OrderSpecifier<?> primary = (request.direction() == Direction.ASC) ? sortField.asc() : sortField.desc();
-    OrderSpecifier<?> secondary = (request.direction() == Direction.ASC) ? post.id.asc() : post.id.desc();
+    OrderSpecifier<?> primary = switch (request.postSortBy()) {
+      case DATE -> (request.direction() == Direction.ASC) ? post.createdAt.asc() : post.createdAt.desc();
+      case VIEWS -> (request.direction() == Direction.ASC) ? postStat.viewCount.asc() : postStat.viewCount.desc();
+      case LIKES -> (request.direction() == Direction.ASC) ? postStat.likeCount.asc() : postStat.likeCount.desc();
+    };
+    OrderSpecifier<?> secondary =
+        (request.direction() == Direction.ASC) ? post.id.asc() : post.id.desc();
+
 
     return queryFactory
         .select(Projections.constructor(PostWithStat.class, post, postStat))

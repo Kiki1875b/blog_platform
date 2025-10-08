@@ -27,6 +27,10 @@ public class PostQueryService {
   private final PostTagRepository postTagRepository;
   private final PostMapper postMapper;
 
+  public Post getPostById(UUID uuid) {
+    return postRepositoryPort.findById(uuid);
+  }
+
   public Post getPostByIdWithTag(UUID uuid) {
     return postRepositoryPort.findByIdJoinTag(uuid);
   }
