@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -57,14 +58,16 @@ public class SecurityConfig {
                 "/oauth2/**",
                 "/api/auth/**",
                 "/api/member/{memberId}/blogs",
-                "/api/posts/{postId}",
-                "/api/posts/{postId}/comments"
+                "/api/posts/{postId}"
+
             )
             .permitAll()
             .requestMatchers("/favicon.ico").permitAll()
             .requestMatchers("/api/private/**").authenticated()
             .requestMatchers("/api/posts/**").hasRole("USER")
             .requestMatchers("/api/member/**").hasRole("USER")
+            .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
+
             .anyRequest().authenticated()
         )
         .formLogin(form -> form
