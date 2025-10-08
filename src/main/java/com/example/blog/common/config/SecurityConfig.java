@@ -57,7 +57,8 @@ public class SecurityConfig {
                 "/oauth2/**",
                 "/api/auth/**",
                 "/api/member/{memberId}/blogs",
-                "/api/posts/{postId}"
+                "/api/posts/{postId}",
+                "/api/posts/{postId}/comments"
             )
             .permitAll()
             .requestMatchers("/favicon.ico").permitAll()

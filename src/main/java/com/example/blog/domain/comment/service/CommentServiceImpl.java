@@ -11,6 +11,7 @@ import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.member.service.MemberService;
 import com.example.blog.domain.post.entity.Post;
 import com.example.blog.domain.post.service.PostQueryService;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,17 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentMapper.toEntity(request, post, member, parentComment);
 
         return commentRepositoryPort.save(comment);
+    }
+
+
+    @Override
+    public List<Comment> getRootCommentsByPostId(UUID postId) {
+        return commentRepositoryPort.findRootByPostId(postId);
+    }
+
+    @Override
+    public List<Comment> getChildCommentsIn(List<Comment> comments) {
+        List<UUID> ids = comments.stream().map(Comment::getId).toList();
+        return commentRepositoryPort.findChildCommentsOf(ids);
     }
 }
