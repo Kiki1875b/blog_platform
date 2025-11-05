@@ -12,4 +12,8 @@ public interface CommentService {
     List<Comment> getRootCommentsByPostId(UUID postId);
 
     List<Comment> getChildCommentsIn(List<Comment> comments);
+
+    Comment updateComment(UUID commentId, UUID authorId, String content);
+
+    void softDeleteComment(UUID commentId, UUID id);
 }

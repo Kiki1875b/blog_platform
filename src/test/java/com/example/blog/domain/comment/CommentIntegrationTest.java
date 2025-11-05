@@ -1,5 +1,7 @@
 package com.example.blog.domain.comment;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -9,6 +11,7 @@ import com.example.blog.auth.jwt.JwtService;
 import com.example.blog.domain.blog.entity.Blog;
 import com.example.blog.domain.blog.respository.BlogRepository;
 import com.example.blog.domain.comment.dto.CreateCommentRequestDto;
+import com.example.blog.domain.comment.dto.UpdateCommentRequest;
 import com.example.blog.domain.comment.entity.Comment;
 import com.example.blog.domain.comment.repository.CommentRepository;
 import com.example.blog.domain.member.entity.Member;
@@ -53,9 +56,9 @@ public class CommentIntegrationTest extends PostgresContainerTest {
     @Autowired
     private CommentRepository commentRepository;
 
-    private Member member;
+    private Member member, otherMember;
     private Post post;
-    private String accessToken;
+    private String accessToken, otherAccessToken;
 
     @AfterEach
     void clearSecurityContext() {
@@ -66,6 +69,9 @@ public class CommentIntegrationTest extends PostgresContainerTest {
         member = new Member("test@test.com", "password", "nickname", null, null, com.example.blog.common.enumerated.MemberStatus.ACTIVE, null, "name", com.example.blog.domain.member.entity.MemberRole.USER);
         memberRepository.save(member);
 
+        otherMember = new Member("other@test.com", "password", "otherNickname", null, null, com.example.blog.common.enumerated.MemberStatus.ACTIVE, null, "name", com.example.blog.domain.member.entity.MemberRole.USER);
+        memberRepository.save(otherMember);
+
         Blog blog = new Blog(member, "title", "desc", com.example.blog.domain.blog.entity.BlogVisibility.PUBLIC, "slug", null);
         blogRepository.save(blog);
 
@@ -73,6 +79,7 @@ public class CommentIntegrationTest extends PostgresContainerTest {
         postRepository.save(post);
 
         accessToken = jwtService.generateAccessToken(member, "USER");
+        otherAccessToken = jwtService.generateAccessToken(otherMember, "USER");
     }
 
     @Test
@@ -93,7 +100,7 @@ public class CommentIntegrationTest extends PostgresContainerTest {
     @Test
     @DisplayName("게시물에 대댓글 작성")
     void createNestedComment() throws Exception {
-        Comment parentComment = new Comment(post, member, "parent content", false, null);
+        Comment parentComment = new Comment(post, member, "parent content", "parent content",false, null);
         commentRepository.save(parentComment);
 
         CreateCommentRequestDto requestDto = new CreateCommentRequestDto("This is a nested comment.", parentComment.getId());
@@ -167,5 +174,82 @@ public class CommentIntegrationTest extends PostgresContainerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 - 성공")
+    void updateComment_success() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        UpdateCommentRequest requestDto = new UpdateCommentRequest("updated content");
+
+        mockMvc.perform(patch("/api/comments/{commentId}", comment.getId())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(requestDto.content()));
+    }
+
+    @Test
+    @DisplayName("댓글 수정 - 실패 (미인증)")
+    void updateComment_fail_unauthorized() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        UpdateCommentRequest requestDto = new UpdateCommentRequest("updated content");
+
+        mockMvc.perform(patch("/api/comments/{commentId}", comment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 - 실패 (권한 없음)")
+    void updateComment_fail_forbidden() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        UpdateCommentRequest requestDto = new UpdateCommentRequest("updated content");
+
+        mockMvc.perform(patch("http://localhost:8080/api/comments/{commentId}", comment.getId())
+                        .header("Authorization", "Bearer " + otherAccessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - 성공")
+    void deleteComment_success() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        mockMvc.perform(delete("/api/comments/{commentId}", comment.getId())
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - 실패 (미인증)")
+    void deleteComment_fail_unauthorized() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        mockMvc.perform(delete("/api/comments/{commentId}", comment.getId()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - 실패 (권한 없음)")
+    void deleteComment_fail_forbidden() throws Exception {
+        Comment comment = new Comment(post, member, "original content", "parent content",false, null);
+        commentRepository.save(comment);
+
+        mockMvc.perform(delete("/api/comments/{commentId}", comment.getId())
+                        .header("Authorization", "Bearer " + otherAccessToken))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -50,4 +50,15 @@ public class CommentFacadeImpl implements CommentFacade {
 
         return new ArrayList<>(dtoMap.values());
     }
+
+    @Override
+    public CommentResponseDto updateComment(UUID commentId, UUID authorId, String content) {
+        Comment comment = commentService.updateComment(commentId, authorId, content);
+        return commentMapper.toResponse(comment);
+    }
+
+    @Override
+    public void deleteComment(UUID commentId, UUID id) {
+        commentService.softDeleteComment(commentId, id);
+    }
 }

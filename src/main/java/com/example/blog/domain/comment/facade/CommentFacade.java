@@ -10,4 +10,8 @@ import java.util.UUID;
 public interface CommentFacade {
   CommentResponseDto createComment(CustomPrincipal principal, UUID postId, CreateCommentRequestDto dto);
   List<PostCommentResponseDto> getPostComments(UUID postId);
+
+  CommentResponseDto updateComment(UUID commentId, UUID authorId, String content);
+
+  void deleteComment(UUID commentId, UUID id);
 }

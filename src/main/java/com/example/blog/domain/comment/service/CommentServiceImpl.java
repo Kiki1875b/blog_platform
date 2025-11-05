@@ -34,8 +34,8 @@ public class CommentServiceImpl implements CommentService {
 
         Comment parentComment = null;
         if (request.parentCommentId() != null) {
-            parentComment = commentRepositoryPort.findById(request.parentCommentId())
-                .orElseThrow(() -> new CommentException(ErrorCode.PARENT_COMMENT_NOT_FOUND));
+            parentComment = commentRepositoryPort.findById(request.parentCommentId());
+
         }
 
         Comment comment = commentMapper.toEntity(request, post, member, parentComment);
@@ -53,5 +53,26 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> getChildCommentsIn(List<Comment> comments) {
         List<UUID> ids = comments.stream().map(Comment::getId).toList();
         return commentRepositoryPort.findChildCommentsOf(ids);
+    }
+
+    @Override
+    @Transactional
+    public Comment updateComment(UUID commentId, UUID authorId, String content) {
+        Comment comment = commentRepositoryPort.findById(commentId);
+        if(!comment.getMember().getId().equals(authorId)){
+            throw new CommentException(ErrorCode.AUTHOR_VALIDATION_FAILED);
+        }
+        comment.updateContent(content);
+        return comment;
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteComment(UUID commentId, UUID id) {
+        Comment comment = commentRepositoryPort.findById(commentId);
+        if(!comment.getMember().getId().equals(id)){
+            throw new CommentException(ErrorCode.AUTHOR_VALIDATION_FAILED);
+        }
+        comment.softDelete();
     }
 }

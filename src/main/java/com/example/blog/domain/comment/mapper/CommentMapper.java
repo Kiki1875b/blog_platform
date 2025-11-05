@@ -15,6 +15,7 @@ public interface CommentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "isDeleted", constant = "false")
     @Mapping(target = "content", source = "dto.content")
+    @Mapping(target = "deletedContent", source = "dto.content")
     @Mapping(target = "post", source = "post")
     @Mapping(target = "member", source = "member")
     @Mapping(target = "parent", source = "parent")
