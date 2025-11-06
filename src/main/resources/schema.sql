@@ -126,6 +126,7 @@ CREATE TABLE comments (
                           post_id     UUID NOT NULL,
                           member_id     UUID NOT NULL,
                           content     VARCHAR(3000) NOT NULL,
+                          deleted_content VARCHAR(3000) NOT NULL,
                           is_deleted  BOOLEAN NOT NULL DEFAULT FALSE,
                           parent_id   UUID,                       -- NULL = 루트 댓글
                           created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),

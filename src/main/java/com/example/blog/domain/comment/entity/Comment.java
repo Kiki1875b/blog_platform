@@ -1,6 +1,5 @@
 package com.example.blog.domain.comment.entity;
 
-import com.example.blog.domain.base.BaseEntity;
 import com.example.blog.domain.base.BaseUpdatableEntity;
 import com.example.blog.domain.member.entity.Member;
 import com.example.blog.domain.post.entity.Post;
@@ -31,10 +30,24 @@ public class Comment extends BaseUpdatableEntity {
   @Column(nullable = false)
   private String content;
 
+  @Column(name = "deleted_content")
+  private String deletedContent;
+
   @Column(name = "is_deleted")
   boolean isDeleted = false;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
   private Comment parent;
+
+  public void updateContent(String content){
+    if(content != null && !content.isEmpty()){
+      this.content = content;
+    }
+  }
+
+  public void softDelete(){
+    content = null;
+    isDeleted = true;
+  }
 }

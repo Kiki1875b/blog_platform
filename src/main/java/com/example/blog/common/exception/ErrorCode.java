@@ -29,7 +29,9 @@ public enum ErrorCode {
   POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트를 찾을 수 없습니다."),
 
   // COMMENT
-  PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다.")
+  PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다."),
+  COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+  AUTHOR_VALIDATION_FAILED(HttpStatus.UNAUTHORIZED, "작성자만 댓글을 수정할 수 있습니다.")
 
 
 
